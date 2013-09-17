@@ -1,0 +1,19 @@
+{
+    "name": "orbisnull/delta",
+    "description": "Delta PHP framework - fast, light, easy",
+    "license": "GPL-3.0+",
+    "minimum-stability": "dev",
+    "authors": [
+        {
+            "name": "Vasiliy Shvakin",
+            "email": "zen4dev@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-0": {"Delta": "src/"}
+    },
+    "require": {
+        "orbisnull/kindrouter": "dev-master",
+        "orbisnull/orbistools": "dev-master"
+    }
+}

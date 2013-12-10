@@ -1,6 +1,6 @@
 {
-    "name": "orbisnull/delta",
-    "description": "Delta PHP framework - fast, light, easy",
+    "name": "orbisnull/deltacore",
+    "description": "Delta PHP framework - fast, light, easy (core)",
     "license": "GPL-3.0+",
     "minimum-stability": "dev",
     "authors": [
@@ -10,7 +10,7 @@
         }
     ],
     "autoload": {
-        "psr-0": {"Delta": "src/"}
+        "psr-0": {"DeltaCore": "src/"}
     },
     "require": {
         "orbisnull/kindrouter": "dev-master",

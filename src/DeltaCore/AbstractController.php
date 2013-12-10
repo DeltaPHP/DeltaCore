@@ -1,11 +1,11 @@
 <?php
 
-namespace Delta;
+namespace DeltaCore;
 
 use OrbisTools\Request;
 use OrbisTools\Response;
 
-class Controller
+abstract class AbstractController
 {
 
     /**
@@ -82,7 +82,7 @@ class Controller
     }
 
     /**
-     * @param \Delta\ViewBlitz $view
+     * @param ViewBlitz $view
      */
     public function setView($view)
     {
@@ -90,7 +90,7 @@ class Controller
     }
 
     /**
-     * @return \Delta\ViewBlitz
+     * @return ViewBlitz
      */
     public function getView()
     {
@@ -118,12 +118,5 @@ class Controller
     public function init() {return;}
 
     public function finalize() {return;}
-
-
-
-
-
-
-
 
 }

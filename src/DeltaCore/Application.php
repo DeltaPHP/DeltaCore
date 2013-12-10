@@ -1,5 +1,5 @@
 <?php
-namespace Delta;
+namespace DeltaCore;
 
 use Kindrouter\Router;
 use OrbisTools\Request;
@@ -113,9 +113,9 @@ class Application
         $controller = ucfirst($controller) . 'Controller';
         $action = $actionName .'Action';
 
-        /** @var Controller $controller */
+        /** @var AbstractController $controller */
         $controller = new $controller();
-        if (!$controller instanceof Controller) {
+        if (!$controller instanceof AbstractController) {
             throw new \ErrorException();
         }
         $controller->setApplication($this);
@@ -151,6 +151,5 @@ class Application
         }
         return $this->response;
     }
-
 
 }

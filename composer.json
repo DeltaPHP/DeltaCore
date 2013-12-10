@@ -10,10 +10,14 @@
         }
     ],
     "autoload": {
-        "psr-0": {"DeltaCore": "src/"}
+        "psr-0": {
+            "DeltaCore": "src/"
+        }
     },
     "require": {
         "orbisnull/kindrouter": "dev-master",
-        "orbisnull/orbistools": "dev-master"
+        "orbisnull/orbistools": "dev-master",
+        "monolog/monolog": "1.*",
+        "twig/twig": "1.*"
     }
 }

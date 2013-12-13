@@ -9,6 +9,7 @@ class Application
 {
     protected $router;
     protected $config;
+    protected $view;
     /**
      * @var Request
      */
@@ -108,14 +109,19 @@ class Application
 
     public function getView()
     {
-        $viewAdapter = $this->getConfig();
+        if (is_null($this->view)) {
+            $viewConfig = $this->getConfig('view');
+            $viewAdapter = $this->getConfig(['view', 'adapter'], 'Twig');
+            $this->view = ViewFactory::getView($viewAdapter, $viewConfig);
+        }
+        return $this->view;
     }
 
     public function action($controller, $action)
     {
         $actionName = lcfirst($action);
         $controllerName = lcfirst($controller);
-        $template = lcfirst($controller) . '/' . $actionName;
+        $template = $controllerName . '/' . $actionName;
         $controller = ucfirst($controller) . 'Controller';
         $action = $actionName .'Action';
 
@@ -128,14 +134,13 @@ class Application
         $controller->setRequest($this->getRequest());
         $controller->setResponse($this->getResponse());
 
-        $view = new ViewBlitz(PUBLIC_DIR . '/templates');
-        if ($view->isTemplateExists($template)) {
-            $view->setTemplate($template);
-        }
+        $view = $this->getView();
+
         $view->setTemplate($template);
-        $view->set('_controller', $controllerName);
-        $view->set('_action', $actionName);
-        $view->set('_path', $controllerName . '/' . $actionName);
+        $view->assignArray(['_controller' => $controllerName,
+                            '_action'     => $actionName,
+                            '_path'       => $controllerName . '/' . $actionName
+        ]);
         $controller->setView($view);
 
         $controller->init();
@@ -143,7 +148,7 @@ class Application
         $controller->finalize();
 
         if ($controller->isAutoRender()) {
-            $html = $controller->getView()->parse();
+            $html = $controller->getView()->render();
             $response = $controller->getResponse();
             $response->setBody($html);
             $response->sendReplay();

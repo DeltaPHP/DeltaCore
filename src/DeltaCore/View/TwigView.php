@@ -59,6 +59,14 @@ class TwigView implements InterfaceView
         $this->template = $name;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getTemplate()
+    {
+        return $this->template;
+    }
+
     public function setArrayTemplates($templateString, $templateName = self::DEFAULT_TEMPLATE)
     {
         $this->arrayTemplates[$templateName] = $templateString;
@@ -90,7 +98,19 @@ class TwigView implements InterfaceView
      */
     public function getTemplateDirs()
     {
-        ArrayUtils::getByPath($this->getConfig(), 'templateDir', '/www/templates');
+        $dirs = (array) ArrayUtils::getByPath($this->getConfig(), 'templateDirs', 'public/templates');
+        $realDirs = [];
+        foreach ($dirs as $dir) {
+            if(strpos($dir, '/') === 0) {
+                $realDirs[] = $dir;
+                continue;
+            }
+            $dir = realpath(ROOT_DIR . '/' . $dir);
+            if ($dir && is_dir($dir)) {
+                $realDirs[] = $dir;
+            }
+        }
+        return $realDirs;
     }
 
     public function reset()
@@ -152,6 +172,7 @@ class TwigView implements InterfaceView
         return $this->globalVars;
     }
 
+
     public function render($templateName = self::DEFAULT_TEMPLATE, $params = [])
     {
         $vars = $this->getAssignedVars();
@@ -161,6 +182,12 @@ class TwigView implements InterfaceView
         foreach ($globalVars as $name=>$value) {
             $render->addGlobal($name, $value);
         }
-        $render->render($templateName, $vars);
+        if ($templateName === self::DEFAULT_TEMPLATE || $templateName = null) {
+            $mainTemplate = $this->getTemplate();
+            $templateName = $mainTemplate ?: ($templateName ?: self::DEFAULT_TEMPLATE);
+        }
+        $templateName = $templateName . '.' . $this->getTemplateExtension();
+        $output = $render->render($templateName, $vars);
+        return $output;
     }
 }

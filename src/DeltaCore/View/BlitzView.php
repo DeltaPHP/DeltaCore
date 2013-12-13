@@ -1,23 +1,24 @@
 <?php
+/**
+ * User: Vasiliy Shvakin (orbisnull) zen4dev@gmail.com
+ */
 
-namespace DeltaCore;
+namespace DeltaCore\View;
 
-class ViewBlitz
+use DeltaCore\InterfaceView;
+
+class BlitzView implements InterfaceView1
 {
     /**
-     * @var BlitzTemplate
+     * @var \Blitz
      */
     protected $parser;
-
     protected $vars = [];
-
     protected $globalVars = [];
-
     protected $template;
-
     protected $templateDir;
-
     protected $templateExt = '.html';
+    protected $templateString;
 
     function __construct($templateDir = null)
     {
@@ -26,14 +27,13 @@ class ViewBlitz
         }
     }
 
-
     /**
-     * @return BlitzTemplate
+     * @return \Blitz
      */
     public function getParser()
     {
         if (is_null($this->parser)) {
-            $this->parser = new BlitzTemplate();
+            $this->parser = new \Blitz();
         }
         return $this->parser;
     }
@@ -70,13 +70,9 @@ class ViewBlitz
         return $this->templateExt;
     }
 
-
-    /**
-     * @param mixed $template
-     */
-    public function setTemplate($template)
+    public function setTemplate($name)
     {
-        $templateFile = $this->calcTemplatePath($template);
+        $templateFile = $this->calcTemplatePath($name);
         $this->setTemplateFile($templateFile);
     }
 
@@ -85,9 +81,9 @@ class ViewBlitz
         return $this->getTemplateDir() . '/' . $relativeTemplate . $this->getTemplateExt();
     }
 
-    public function setTemplateFile($file, $relativePath = true)
+    public function setTemplateFile($path, $isRelativePath = true)
     {
-        $this->template = $file;
+        $this->template = $path;
     }
 
     public function isTemplateExists($template)
@@ -107,10 +103,11 @@ class ViewBlitz
 
     protected function loadTemplate($file)
     {
+        $
         $this->getParser()->load(file_get_contents($file));
     }
 
-    public function parse($template = null, array $vars = null, array $globalVars = null)
+    public function render($template, $params = [])
     {
         if (!is_null($template)) {
             $this->setTemplate($template);
@@ -134,24 +131,24 @@ class ViewBlitz
         return $this->getParser()->parse();
     }
 
-    public function set($name, $value)
+    public function assign($name, $value)
     {
         $this->vars[$name] = $value;
         return $this;
     }
 
-    public function setGlobal($name, $value)
+    public function assignGlobal($name, $value)
     {
         $this->globalVars[$name] = $value;
         return $this;
     }
 
-    public function setArray(array $array)
+    public function assignArray(array $array)
     {
         $this->vars += $array;
     }
 
-    public function setGlobalArray(array $array)
+    public function assignGlobalArray(array $array)
     {
         $this->globalVars += $array;
     }
@@ -188,4 +185,16 @@ class ViewBlitz
         $this->vars = [];
         $this->globalVars = [];
     }
-}
+
+    public function setArrayTemplates($templateString)
+    {
+        $this->templateString = $templateString;
+    }
+
+    public function display($template = null, $params = [])
+    {
+        echo $this->render($template, $params);
+    }
+
+
+} 

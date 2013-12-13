@@ -4,10 +4,10 @@ namespace DeltaCore;
 
 use OrbisTools\Request;
 use OrbisTools\Response;
+use DeltaCore\Application;
 
 abstract class AbstractController
 {
-
     /**
      * @var Application
      */
@@ -75,14 +75,13 @@ abstract class AbstractController
         return $this->response;
     }
 
-
-    public function getConfig($path = null)
+    public function getConfig($path = null, $default = null)
     {
-        //
+        return $this->getApplication()->getConfig($path, $default);
     }
 
     /**
-     * @param ViewBlitz $view
+     * @param InterfaceView $view
      */
     public function setView($view)
     {
@@ -90,12 +89,13 @@ abstract class AbstractController
     }
 
     /**
-     * @return ViewBlitz
+     * @return InterfaceView
      */
     public function getView()
     {
         if (is_null($this->view)) {
-            $this->view = new ViewBlitz(PUBLIC_DIR . '/templates');
+            $viewAdapter = $this->getConfig(['view','adapter'], 'twig');
+            $this->view = ViewFactory::getView($viewAdapter, $this->getConfig('view'));
         }
         return $this->view;
     }

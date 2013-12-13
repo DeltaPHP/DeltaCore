@@ -8,14 +8,11 @@ use OrbisTools\Response;
 class Application
 {
     protected $router;
-
-    protected $config = [];
-
+    protected $config;
     /**
      * @var Request
      */
     protected $request;
-
     /**
      * @var Response
      */
@@ -24,7 +21,8 @@ class Application
     function __construct()
     {
         if (!defined('ROOT_DIR') || !ROOT_DIR) {
-            throw new \RuntimeException('ROOT_DIR not defined');
+            $rootDir = realpath(__DIR__ . '../../../../');
+            define('ROOT_DIR', $rootDir);
         }
     }
 
@@ -56,9 +54,12 @@ class Application
         return $this->router;
     }
 
-    public function getConfig()
+    public function getConfig($path = null, $default = null)
     {
-        return $this->config;
+        if (is_null($this->config)) {
+            $this->config = new Config();
+        }
+        return $this->config->getConfig($path, $default);
     }
 
     public function loadRouters()
@@ -103,6 +104,11 @@ class Application
     function __invoke()
     {
         return $this->run();
+    }
+
+    public function getView()
+    {
+        $viewAdapter = $this->getConfig();
     }
 
     public function action($controller, $action)

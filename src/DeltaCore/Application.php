@@ -7,9 +7,23 @@ use OrbisTools\Response;
 
 class Application
 {
+    /**
+     * @var Router
+     */
     protected $router;
+    /**
+     * @var ConfigLoader
+     */
+    protected $configLoader;
+    /**
+     * @var Config
+     */
     protected $config;
+    /**
+     * @var InterfaceView
+     */
     protected $view;
+
     /**
      * @var Request
      */
@@ -22,7 +36,7 @@ class Application
     function __construct()
     {
         if (!defined('ROOT_DIR') || !ROOT_DIR) {
-            $rootDir = realpath(__DIR__ . '../../../../');
+            $rootDir = realpath(__DIR__ . '../../../../../');
             define('ROOT_DIR', $rootDir);
         }
     }
@@ -55,12 +69,28 @@ class Application
         return $this->router;
     }
 
+    /**
+     * @param mixed $configLoader
+     */
+    public function setConfigLoader($configLoader)
+    {
+        $this->configLoader = $configLoader;
+    }
+
+    public function getConfigLoader()
+    {
+        if (is_null($this->configLoader)) {
+            $this->configLoader = new ConfigLoader();
+        }
+        return $this->configLoader;
+    }
+
     public function getConfig($path = null, $default = null)
     {
         if (is_null($this->config)) {
-            $this->config = new Config();
+            $this->config = $this->getConfigLoader()->getConfig();
         }
-        return $this->config->getConfig($path, $default);
+        return $this->config->get($path, $default);
     }
 
     public function loadRouters()
@@ -95,7 +125,6 @@ class Application
         }
         return true;
     }
-
 
     public function run()
     {
@@ -159,6 +188,7 @@ class Application
     {
         if (is_null($this->response)) {
             $this->response = new Response();
+            $this->response->setConfig($this->getConfig('response'));
         }
         return $this->response;
     }

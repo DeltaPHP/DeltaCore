@@ -5,72 +5,95 @@
 
 namespace DeltaCore;
 
-
 use OrbisTools\ArrayUtils;
 
-class Config
+class Config implements  \ArrayAccess
 {
-    const LOCAL_CONFIG = 'local';
-    const GLOBAL_CONFIG = 'global';
+    protected $configRaw;
 
-    protected $configDir;
-    protected $config;
-    protected $defaultConfig = [];
+    protected $childConfig = [];
 
-    function __construct($configDir = null)
+    function __construct(array $config)
     {
-        $configDir = $configDir ?: ROOT_DIR . '/config';
-        $this->setConfigDir($configDir);
+        $this->configRaw = $config;
     }
 
-    public function setDefaultConfig(array $config)
+    public function get($path = null, $default = null)
     {
-        $this->defaultConfig = $config;
-
-    }
-
-    public function getDefaultConfig()
-    {
-        return $this->defaultConfig;
+        if (is_null($path)) {
+            return $this;
+        }
+        $pathKey = implode('|', (array) $path);
+        if (!isset($this->childConfig[$pathKey])) {
+            $needConfig = ArrayUtils::getByPath($this->configRaw, $path, $default);
+            if (is_array($needConfig)) {
+                $this->childConfig[$pathKey] = new Config($needConfig);
+            } else {
+                $this->childConfig[$pathKey] = $needConfig;
+            }
+        }
+        return $this->childConfig[$pathKey];
     }
 
     /**
-     * @param mixed $configDir
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Whether a offset exists
+     * @link http://php.net/manual/en/arrayaccess.offsetexists.php
+     * @param mixed $offset <p>
+     * An offset to check for.
+     * </p>
+     * @return boolean true on success or false on failure.
+     * </p>
+     * <p>
+     * The return value will be casted to boolean if non-boolean was returned.
      */
-    public function setConfigDir($configDir)
+    public function offsetExists($offset)
     {
-        $this->configDir = $configDir;
+        return isset($this->configRaw[$offset]);
     }
 
     /**
-     * @return mixed
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Offset to retrieve
+     * @link http://php.net/manual/en/arrayaccess.offsetget.php
+     * @param mixed $offset <p>
+     * The offset to retrieve.
+     * </p>
+     * @return mixed Can return all value types.
      */
-    public function getConfigDir()
+    public function offsetGet($offset)
     {
-        return $this->configDir;
+        return ($this->offsetExists($offset)) ? $this->get($offset) : null;
     }
 
-    public function readConfig($type)
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Offset to set
+     * @link http://php.net/manual/en/arrayaccess.offsetset.php
+     * @param mixed $offset <p>
+     * The offset to assign the value to.
+     * </p>
+     * @param mixed $value <p>
+     * The value to set.
+     * </p>
+     * @return void
+     */
+    public function offsetSet($offset, $value)
     {
-        $file = $this->getConfigDir() . "/{$type}config.php";
-        if (file_exists($file)) {
-            return (array) include ($file);
-        } else {
-            return [];
-        }
+        throw new \LogicException('Config can`t change on runtime');
     }
 
-    public function getConfig($path = null, $default = null)
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Offset to unset
+     * @link http://php.net/manual/en/arrayaccess.offsetunset.php
+     * @param mixed $offset <p>
+     * The offset to unset.
+     * </p>
+     * @return void
+     */
+    public function offsetUnset($offset)
     {
-        if (is_null($this->config)) {
-            $defaultConfig = $this->getDefaultConfig();
-            $globalConfig = $this->readConfig(self::GLOBAL_CONFIG);
-            $localConfig = $this->readConfig(self::GLOBAL_CONFIG);
-            $this->config = ArrayUtils::merge_recursive($defaultConfig, $globalConfig, $localConfig);
-        }
-        if (!is_null($path)) {
-            return ArrayUtils::getByPath($this->config, $path, $default);
-        }
-        return $this->config;
+        throw new \LogicException('Config can`t change on runtime');
     }
 }

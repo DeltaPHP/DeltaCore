@@ -5,10 +5,11 @@
 
 namespace DeltaCore\View;
 
+use DeltaCore\AbstractView;
 use DeltaCore\InterfaceView;
 use OrbisTools\ArrayUtils;
 
-class TwigView implements InterfaceView
+class TwigView extends AbstractView implements InterfaceView
 {
     const TPL_EXT = 'twig';
 
@@ -67,9 +68,9 @@ class TwigView implements InterfaceView
         return $this->template;
     }
 
-    public function setArrayTemplates($templateString, $templateName = self::DEFAULT_TEMPLATE)
+    public function setArrayTemplates($templatesString, $templateName = self::DEFAULT_TEMPLATE)
     {
-        $this->arrayTemplates[$templateName] = $templateString;
+        $this->arrayTemplates[$templateName] = $templatesString;
     }
 
     /**

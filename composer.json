@@ -17,8 +17,6 @@
     "require": {
         "orbisnull/kindrouter": "dev-master",
         "orbisnull/orbistools": "dev-master",
-        "monolog/monolog": "1.*",
-        "twig/twig": "1.*",
         "orbisnull/dtpl": "dev-master"
     }
 }

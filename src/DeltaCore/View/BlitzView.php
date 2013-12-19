@@ -7,6 +7,11 @@ namespace DeltaCore\View;
 
 use DeltaCore\InterfaceView;
 
+/**
+ * Class BlitzView
+ * @package DeltaCore\View
+ * @deprecated
+ */
 class BlitzView implements InterfaceView1
 {
     /**

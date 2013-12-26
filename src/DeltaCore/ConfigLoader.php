@@ -52,7 +52,7 @@ class ConfigLoader
 
     public function readConfig($type)
     {
-        $file = $this->getConfigDir() . "/{$type}config.php";
+        $file = $this->getConfigDir() . "/{$type}.config.php";
         if (file_exists($file)) {
             return (array) include ($file);
         } else {
@@ -68,7 +68,7 @@ class ConfigLoader
         if (is_null($this->configObj)) {
             $defaultConfig = $this->getDefaultConfig();
             $globalConfig = $this->readConfig(self::GLOBAL_CONFIG);
-            $localConfig = $this->readConfig(self::GLOBAL_CONFIG);
+            $localConfig = $this->readConfig(self::LOCAL_CONFIG);
             $config = ArrayUtils::merge_recursive($defaultConfig, $globalConfig, $localConfig);
             $this->configObj = new Config($config);
         }

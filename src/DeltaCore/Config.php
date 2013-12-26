@@ -96,4 +96,9 @@ class Config implements  \ArrayAccess
     {
         throw new \LogicException('Config can`t change on runtime');
     }
+
+    public function toArray()
+    {
+        return (array)$this->configRaw;
+    }
 }

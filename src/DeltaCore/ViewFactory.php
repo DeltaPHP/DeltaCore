@@ -6,18 +6,20 @@
 namespace DeltaCore;
 
 use DeltaCore\View\TwigView;
-use OrbisTools\ArrayUtils;
 
 class ViewFactory
 {
-    public static function getView($adapterName, array $config)
+    public static function getView($adapterName, Config $config = null)
     {
         $adapterName = strtolower($adapterName);
         switch($adapterName) {
-            case 'Twig' :
+            case 'twig' :
                 $view = new TwigView();
                 $view->setConfig($config);
                 return $view;
+            break;
+            default:
+                throw new \InvalidArgumentException("View adapter $adapterName not defined");
         }
     }
 } 

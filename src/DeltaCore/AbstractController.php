@@ -4,7 +4,7 @@ namespace DeltaCore;
 
 use OrbisTools\Request;
 use OrbisTools\Response;
-use DeltaCore\Application;
+use dTpl\InterfaceView;
 
 abstract class AbstractController
 {

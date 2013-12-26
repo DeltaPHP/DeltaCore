@@ -5,6 +5,7 @@
 
 namespace DeltaCore\View;
 
+use DeltaCore\Config;
 use dTpl\AbstractView;
 use dTpl\InterfaceView;
 use OrbisTools\ArrayUtils;
@@ -30,6 +31,7 @@ class TwigView extends AbstractView implements InterfaceView
     public function getRender()
     {
         if (is_null($this->render)) {
+            $config = $this->getConfig();
             $templateDirs = $this->getTemplateDirs();
             $loader = new \Twig_Loader_Filesystem($templateDirs);
             $templatesArray = $this->getArrayTemplates();
@@ -37,7 +39,19 @@ class TwigView extends AbstractView implements InterfaceView
                 $arrayLoader = new \Twig_Loader_Array($templatesArray);
                 $loader = new \Twig_Loader_Chain([$loader, $arrayLoader]);
             }
-            $this->render = new \Twig_Environment($loader);
+            $options = isset($config['options']) ? $config['options']: [];
+            if ($options instanceof Config) {
+                $options = $options->toArray();
+            }
+            if (isset($options['cache'])) {
+                $cache = realpath($this->getRootDir() . '/' . $options['cache']);
+                if ($cache) {
+                    $options['cache'] = $cache;
+                } else {
+                    unset($options['cache']);
+                }
+            }
+            $this->render = new \Twig_Environment($loader, $options);
         }
         return $this->render;
     }

@@ -43,7 +43,7 @@ class TwigView extends AbstractView implements InterfaceView
             if ($options instanceof Config) {
                 $options = $options->toArray();
             }
-            if (isset($options['cache'])) {
+            if (isset($options['cache']) && $options['cache']) {
                 $cache = realpath($this->getRootDir() . '/' . $options['cache']);
                 if ($cache) {
                     $options['cache'] = $cache;

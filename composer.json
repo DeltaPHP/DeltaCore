@@ -1,5 +1,5 @@
 {
-    "name": "orbisnull/deltacore",
+    "name": "deltaphp/deltacore",
     "description": "Delta PHP framework - fast, light, easy (core)",
     "license": "GPL-3.0+",
     "minimum-stability": "dev",
@@ -15,8 +15,9 @@
         }
     },
     "require": {
-        "orbisnull/kindrouter": "dev-master",
-        "orbisnull/orbistools": "dev-master",
-        "orbisnull/dtpl": "dev-master"
+        "deltaphp/deltarouter": "dev-master",
+        "deltaphp/httpwarp": "dev-master",
+        "deltaphp/deltautils": "dev-master",
+        "deltaphp/dtpl": "dev-master"
     }
 }

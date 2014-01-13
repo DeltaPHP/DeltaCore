@@ -8,7 +8,7 @@ namespace DeltaCore\View;
 use DeltaCore\Config;
 use dTpl\AbstractView;
 use dTpl\InterfaceView;
-use OrbisTools\ArrayUtils;
+use DeltaUtils\ArrayUtils;
 
 class TwigView extends AbstractView implements InterfaceView
 {

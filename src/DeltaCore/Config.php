@@ -5,7 +5,7 @@
 
 namespace DeltaCore;
 
-use OrbisTools\ArrayUtils;
+use DeltaUtils\ArrayUtils;
 
 class Config implements  \ArrayAccess
 {

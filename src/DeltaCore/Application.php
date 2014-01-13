@@ -1,9 +1,9 @@
 <?php
 namespace DeltaCore;
 
-use Kindrouter\Router;
-use OrbisTools\Request;
-use OrbisTools\Response;
+use DeltaRouter\Router;
+use HttpWarp\Request;
+use HttpWarp\Response;
 
 class Application
 {

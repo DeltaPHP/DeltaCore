@@ -24,7 +24,7 @@ abstract class AbstractController
     protected $response;
 
     /**
-     * @var ViewBlitz
+     * @var InterfaceView
      */
     protected $view;
 
@@ -44,7 +44,7 @@ abstract class AbstractController
     }
 
     /**
-     * @param \OrbisTools\Request $request
+     * @param Request $request
      */
     public function setRequest($request)
     {
@@ -52,7 +52,7 @@ abstract class AbstractController
     }
 
     /**
-     * @return \OrbisTools\Request
+     * @return Request
      */
     public function getRequest()
     {
@@ -60,7 +60,7 @@ abstract class AbstractController
     }
 
     /**
-     * @param \OrbisTools\Response $response
+     * @param Response $response
      */
     public function setResponse($response)
     {
@@ -68,7 +68,7 @@ abstract class AbstractController
     }
 
     /**
-     * @return \OrbisTools\Response
+     * @return Response
      */
     public function getResponse()
     {

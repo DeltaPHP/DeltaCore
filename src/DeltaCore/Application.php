@@ -151,7 +151,7 @@ class Application
         $actionName = lcfirst($action);
         $controllerName = lcfirst($controller);
         $template = $controllerName . '/' . $actionName;
-        $controller = ucfirst($controller) . 'Controller';
+        $controller = '\\Controller\\' . ucfirst($controller) . 'Controller';
         $action = $actionName .'Action';
 
         /** @var AbstractController $controller */

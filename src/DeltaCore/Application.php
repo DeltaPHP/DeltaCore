@@ -5,7 +5,7 @@ use DeltaRouter\Router;
 use HttpWarp\Request;
 use HttpWarp\Response;
 
-class Application
+class Application extends \Pimple
 {
     /**
      * @var Router

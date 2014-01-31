@@ -18,6 +18,7 @@
         "deltaphp/deltarouter": "dev-master",
         "deltaphp/httpwarp": "dev-master",
         "deltaphp/deltautils": "dev-master",
-        "deltaphp/dtpl": "dev-master"
+        "deltaphp/dtpl": "dev-master",
+        "pimple/pimple": "2.0.*@dev"
     }
 }

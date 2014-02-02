@@ -4,6 +4,7 @@ namespace DeltaCore;
 use DeltaRouter\Router;
 use HttpWarp\Request;
 use HttpWarp\Response;
+use HttpWarp\Session;
 
 class Application extends \Pimple
 {
@@ -33,12 +34,35 @@ class Application extends \Pimple
      */
     protected $response;
 
+    /**
+     * @var Session
+     */
+    protected $session;
+
     function __construct()
     {
+        parent::__construct();
+
         if (!defined('ROOT_DIR') || !ROOT_DIR) {
             $rootDir = realpath(__DIR__ . '../../../../../');
             define('ROOT_DIR', $rootDir);
         }
+
+        $this['sessions'] = function($c){
+            return $c->getSession();
+        };
+        $this['request'] = function(){
+            return $this->getRequest();
+        };
+        $this['response'] = function(){
+            return $this->getResponse();
+        };
+        $this['router'] = function(){
+            return $this->getRouter();
+        };
+        $this['view'] = function(){
+            return $this->getView();
+        };
     }
 
     /**
@@ -136,6 +160,15 @@ class Application extends \Pimple
         return $this->run();
     }
 
+    public function getResponse()
+    {
+        if (is_null($this->response)) {
+            $this->response = new Response();
+            $this->response->setConfig($this->getConfig('response'));
+        }
+        return $this->response;
+    }
+
     public function getView()
     {
         if (is_null($this->view)) {
@@ -144,6 +177,25 @@ class Application extends \Pimple
             $this->view = ViewFactory::getView($viewAdapter, $viewConfig);
         }
         return $this->view;
+    }
+
+    /**
+     * @param \HttpWarp\Session $session
+     */
+    public function setSession(Session $session)
+    {
+        $this->session = $session;
+    }
+
+    /**
+     * @return \HttpWarp\Session
+     */
+    public function getSession()
+    {
+        if (is_null($this->session)) {
+            $this->session = new Session();
+        }
+        return $this->session;
     }
 
     public function action($controller, $action)
@@ -184,13 +236,6 @@ class Application extends \Pimple
         }
     }
 
-    public function getResponse()
-    {
-        if (is_null($this->response)) {
-            $this->response = new Response();
-            $this->response->setConfig($this->getConfig('response'));
-        }
-        return $this->response;
-    }
+
 
 }

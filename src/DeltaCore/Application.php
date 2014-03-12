@@ -1,13 +1,20 @@
 <?php
 namespace DeltaCore;
 
+use Composer\Autoload\ClassLoader;
 use DeltaRouter\Router;
+use DeltaUtils\ArrayUtils;
 use HttpWarp\Request;
 use HttpWarp\Response;
 use HttpWarp\Session;
 
 class Application extends \Pimple
 {
+    /**
+     * @var ClassLoader
+     */
+    protected $loader;
+
     /**
      * @var Router
      */
@@ -63,6 +70,38 @@ class Application extends \Pimple
         $this['view'] = function(){
             return $this->getView();
         };
+
+        $this["moduleManager"] = function($c) {
+            $modulesList = $c->getConfig("modules", [])->toArray();
+            $mm = new ModuleManager($modulesList);
+            $mm->setLoader($c->getLoader());
+            $mm->setView($c->getView());
+            return $mm;
+        };
+    }
+
+    /**
+     * @param \Composer\Autoload\ClassLoader $loader
+     */
+    public function setLoader($loader)
+    {
+        $this->loader = $loader;
+    }
+
+    /**
+     * @return \Composer\Autoload\ClassLoader
+     */
+    public function getLoader()
+    {
+        return $this->loader;
+    }
+
+    /**
+     * @return ModuleManager
+     */
+    public function getModuleManager()
+    {
+        return $this["moduleManager"];
     }
 
     /**
@@ -88,7 +127,6 @@ class Application extends \Pimple
     {
         if (is_null($this->router)) {
             $this->router = new Router();
-            $this->loadRouters();
         }
         return $this->router;
     }
@@ -117,18 +155,36 @@ class Application extends \Pimple
         return $this->config->get($path, $default);
     }
 
-    public function loadRouters()
+    public function readRouters()
     {
         $routersFile = ROOT_DIR . '/config/routers.php';
         if (!file_exists($routersFile)) {
-            return false;
+            return [];
         }
         $routers = include $routersFile;
 
         if (!is_array($routers)) {
-            throw new \RuntimeException('Bad routers file');
+            $routers = [];
         }
+        return $routers;
+    }
 
+    public function readResources()
+    {
+        $resourcesFile = ROOT_DIR . '/config/resources.php';
+        if (!file_exists($resourcesFile)) {
+            return [];
+        }
+        $resources = include $resourcesFile;
+
+        if (!is_array($resources)) {
+            $resources = [];
+        }
+        return $resources;
+    }
+
+    public function setRouters(array $routers)
+    {
         foreach($routers as $route) {
             $path = $route[0];
             if (count($route) === 3) {
@@ -152,7 +208,23 @@ class Application extends \Pimple
 
     public function run()
     {
-        return $this->getRouter()->run();
+        $mm = $this->getModuleManager();
+
+        $globalRouters = $this->readRouters();
+        $modulesRouters = $mm->getRouters();
+        $routers = array_merge($modulesRouters, $globalRouters);
+        $this->setRouters($routers);
+
+        $modulesConfig = $mm->getConfig();
+        $this->getConfigLoader()->joinConfigLeft($modulesConfig);
+
+        $globalResources =$this->readResources();
+        $resources = $mm->getResources();
+        $resources = array_merge($resources, $globalResources);
+        //resourses
+        $mm->load();
+        $this->getRouter()->run();
+        return;
     }
 
     function __invoke()
@@ -201,10 +273,21 @@ class Application extends \Pimple
     public function action($controller, $action)
     {
         $actionName = lcfirst($action);
-        $controllerName = lcfirst($controller);
-        $template = $controllerName . '/' . $actionName;
-        $controller = '\\Controller\\' . ucfirst($controller) . 'Controller';
         $action = $actionName .'Action';
+
+        $view = $this->getView();
+
+        if (!is_array($controller)) {
+            $controllerName = lcfirst($controller);
+            $template = $controllerName . '/' . $actionName;
+            $controller = '\\Controller\\' . ucfirst($controllerName) . 'Controller';
+        } else {
+            $module = $controller["module"];
+            $controllerId = lcfirst($controller["controller"]);
+            $controllerName = "{$module}/{$controllerId}";
+            $controller = "\\{$module}\\Controller\\" . ucfirst($controllerId) . 'Controller';
+            $template = "{$controllerName}/{$actionName}";
+        }
 
         /** @var AbstractController $controller */
         $controller = new $controller();
@@ -214,8 +297,6 @@ class Application extends \Pimple
         $controller->setApplication($this);
         $controller->setRequest($this->getRequest());
         $controller->setResponse($this->getResponse());
-
-        $view = $this->getView();
 
         $view->setTemplate($template);
         $view->assignArray(['_controller' => $controllerName,

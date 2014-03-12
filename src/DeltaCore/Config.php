@@ -6,6 +6,7 @@
 namespace DeltaCore;
 
 use DeltaUtils\ArrayUtils;
+use Traversable;
 
 class Config implements  \ArrayAccess
 {
@@ -15,7 +16,30 @@ class Config implements  \ArrayAccess
 
     function __construct(array $config)
     {
-        $this->configRaw = $config;
+        $this->set($config);
+    }
+
+    public function set($data, array $path = null)
+    {
+        $this->childConfig = [];
+
+        if (is_null($path)) {
+            $this->configRaw = (array) $data;
+            return;
+        }
+        $this->configRaw = ArrayUtils::setByPath($this->configRaw, $path, $data);
+    }
+
+    public function joinLeft(array $data)
+    {
+        $this->configRaw = ArrayUtils::merge_recursive($data, $this->configRaw);
+        $this->childConfig = [];
+    }
+
+    public function joinRight(array $data)
+    {
+        $this->configRaw = ArrayUtils::merge_recursive($this->configRaw, $data);
+        $this->childConfig = [];
     }
 
     public function get($path = null, $default = null)
@@ -101,4 +125,6 @@ class Config implements  \ArrayAccess
     {
         return (array)$this->configRaw;
     }
+
+
 }

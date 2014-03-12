@@ -60,6 +60,12 @@ class ConfigLoader
         }
     }
 
+    public function joinConfigLeft(array $config)
+    {
+        $confObj = $this->getConfig();
+        $confObj->joinLeft($config);
+    }
+
     /**
      * @return Config
      */

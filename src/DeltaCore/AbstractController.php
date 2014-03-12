@@ -115,6 +115,34 @@ abstract class AbstractController
         return $this->autoRender;
     }
 
+    public function getControllerName()
+    {
+        $class = get_class($this);
+        $class = explode("\\", $class);
+        $class = $class[count($class)-1];
+        $class = substr($class, 0, -10);
+        $class = lcfirst($class);
+        return $class;
+    }
+
+    public function getModuleName()
+    {
+        $class = get_class($this);
+        $class = explode("\\", $class);
+        $module = $class[0];
+        return $module === "Controller" ? null : $module;
+    }
+
+    public function setViewTemplate($template)
+    {
+        if(strpos($template, "/") == false) {
+            $controller = $this->getControllerName();
+            $module = $this->getModuleName();
+            $template = $module ? "{$module}/{$controller}/{$template}" : "{$controller}/{$template}";
+        }
+        $this->getView()->setTemplate($template);
+    }
+
     public function init() {return;}
 
     public function finalize() {return;}

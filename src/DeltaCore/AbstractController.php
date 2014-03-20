@@ -75,6 +75,11 @@ abstract class AbstractController
         return $this->response;
     }
 
+    /**
+     * @param null $path
+     * @param null $default
+     * @return Config
+     */
     public function getConfig($path = null, $default = null)
     {
         return $this->getApplication()->getConfig($path, $default);

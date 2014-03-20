@@ -206,6 +206,13 @@ class Application extends \Pimple
         return true;
     }
 
+    public function setResources(array $resources)
+    {
+        foreach($resources as $name=>$value) {
+            $this[$name] = $value;
+        }
+    }
+
     public function run()
     {
         $mm = $this->getModuleManager();
@@ -221,6 +228,7 @@ class Application extends \Pimple
         $globalResources =$this->readResources();
         $resources = $mm->getResources();
         $resources = array_merge($resources, $globalResources);
+        $this->setResources($resources);
         //resourses
         $mm->load();
         $this->getRouter()->run();

@@ -52,6 +52,8 @@ class TwigView extends AbstractView implements InterfaceView
                 }
             }
             $this->render = new \Twig_Environment($loader, $options);
+            //TODO DoIt from config
+            $this->render->addExtension(new \Twig_Extension_Debug());
         }
         return $this->render;
     }
@@ -68,8 +70,17 @@ class TwigView extends AbstractView implements InterfaceView
         foreach ($globalVars as $name=>$value) {
             $render->addGlobal($name, $value);
         }
+        /** @var \Twig_Environment $template */
         $template = $this->getTemplate();
         $output = $render->render($template, $vars);
         return $output;
+    }
+
+    public function exist($template)
+    {
+        $template = $template . "." . $this->getTemplateExtension();
+        $loader = $this->getRender()->getLoader();
+        $result = $loader->exists($template);
+        return $result;
     }
 }

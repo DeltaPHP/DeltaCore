@@ -306,6 +306,15 @@ class Application extends \Pimple
         $controller->setRequest($this->getRequest());
         $controller->setResponse($this->getResponse());
 
+        if (!$view->exist($template)) {
+            if ($actionName === "add" or $actionName === "edit") {
+                $template2 = "{$controllerName}/form";
+                if ($view->exist($template2)) {
+                    $template = $template2;
+                }
+            }
+        }
+
         $view->setTemplate($template);
         $view->assignArray(['_controller' => $controllerName,
                             '_action'     => $actionName,

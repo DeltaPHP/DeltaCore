@@ -78,7 +78,7 @@ abstract class AbstractController
     /**
      * @param null $path
      * @param null $default
-     * @return Config
+     * @return Config|mixed
      */
     public function getConfig($path = null, $default = null)
     {
@@ -146,6 +146,32 @@ abstract class AbstractController
             $template = $module ? "{$module}/{$controller}/{$template}" : "{$controller}/{$template}";
         }
         $this->getView()->setTemplate($template);
+    }
+
+    public function getPage()
+    {
+        return (integer) $this->getRequest()->getParam("p", 1);
+    }
+
+    public function getPageInfo($count, $perPage = 10)
+    {
+        $page = $this->getPage();
+        $countPages = ceil($count / $perPage);
+        $page = ($page < 1) ? 1 : ($page > $countPages) ? $countPages : $page;
+        $offset = ($page - 1) * $perPage;
+        $pages = [];
+        for ($i = 1; $i <= $countPages; $i++) {
+            $pages[] = ["id" => $i, "active" => $i === $page];
+        }
+        return [
+            "page"          => $page,
+            "countPages"    => $countPages,
+            "offsetForPage" => $offset,
+            "perPage"       => $perPage,
+            "pages"         => $pages,
+            "showFirstPage" => $page != 1,
+            "showLastPage"  => $page != $countPages,
+        ];
     }
 
     public function init() {return;}

@@ -174,6 +174,11 @@ abstract class AbstractController
         ];
     }
 
+    public function checkAccess()
+    {
+        return true;
+    }
+
     public function init() {return;}
 
     public function finalize() {return;}

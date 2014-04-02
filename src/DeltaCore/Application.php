@@ -2,8 +2,11 @@
 namespace DeltaCore;
 
 use Composer\Autoload\ClassLoader;
+use DeltaCore\Exception\AccessDeniedException;
+use DeltaRouter\Exception\NotFoundException;
 use DeltaRouter\Router;
 use DeltaUtils\ArrayUtils;
+use HttpWarp\Exception\HttpUsableException;
 use HttpWarp\Request;
 use HttpWarp\Response;
 use HttpWarp\Session;
@@ -213,6 +216,33 @@ class Application extends \Pimple
         }
     }
 
+    public function getErrorFunction($errorCode)
+    {
+        $closure = $this->getConfig(["errors", $errorCode], function() use ($errorCode) {
+            $response = new Response();
+            $response->setBody('<!DOCTYPE html> <html lang="ru"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <header> <h1>Error</h1> </header> </body>');
+            $response->setCode($errorCode);
+            $response->sendReplay();
+        });
+        if ($closure instanceof Config) {
+            $closure = $closure->toArray();
+        }
+        return $closure;
+    }
+
+    public function catchRunException(\Exception $e)
+    {
+        $errorCode = $e->getCode();
+        $closure = $this->getErrorFunction($errorCode);
+        if (is_array($closure)) {
+            $this->action($closure[0], $closure[1]);
+        } elseif (is_callable($closure)) {
+            call_user_func($closure);
+        } else {
+            throw $e;
+        }
+    }
+
     public function run()
     {
         $mm = $this->getModuleManager();
@@ -231,13 +261,21 @@ class Application extends \Pimple
         $this->setResources($resources);
         //resourses
         $mm->load();
-        $this->getRouter()->run();
-        return;
-    }
 
-    function __invoke()
-    {
-        return $this->run();
+        /** @var \Closure[] $initClosures */
+        $initClosures = $this->getConfig("init", [])->toArray();
+        foreach($initClosures as $initClosure) {
+            if (is_callable($initClosure)) {
+                call_user_func($initClosure, $this);
+            }
+        }
+
+        try {
+            $this->getRouter()->run();
+        } catch (HttpUsableException $e) {
+            $this->catchRunException($e);
+        }
+        return;
     }
 
     public function getResponse()
@@ -321,6 +359,10 @@ class Application extends \Pimple
                             '_path'       => $controllerName . '/' . $actionName
         ]);
         $controller->setView($view);
+
+        if (!$controller->checkAccess()) {
+            throw new AccessDeniedException();
+        }
 
         $controller->init();
         $controller->$action();

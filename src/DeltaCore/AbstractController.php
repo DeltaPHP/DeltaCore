@@ -174,6 +174,11 @@ abstract class AbstractController
         ];
     }
 
+    public function redirect($url)
+    {
+        return $this->getResponse()->redirect($url);
+    }
+
     public function checkAccess()
     {
         return true;

@@ -166,7 +166,7 @@ abstract class AbstractController
         return [
             "page"          => $page,
             "countPages"    => $countPages,
-            "offsetForPage" => $offset,
+            "offsetForPage" => ($offset >= 0) ? $offset : 0,
             "perPage"       => $perPage,
             "pages"         => $pages,
             "showFirstPage" => $page != 1,

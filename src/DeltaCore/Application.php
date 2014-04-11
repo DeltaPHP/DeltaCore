@@ -6,6 +6,7 @@ use DeltaCore\Exception\AccessDeniedException;
 use DeltaRouter\Exception\NotFoundException;
 use DeltaRouter\Router;
 use DeltaUtils\ArrayUtils;
+use dTpl\InterfaceView;
 use HttpWarp\Exception\HttpUsableException;
 use HttpWarp\Request;
 use HttpWarp\Response;
@@ -292,7 +293,10 @@ class Application extends \Pimple
         if (is_null($this->view)) {
             $viewConfig = $this->getConfig('view');
             $viewAdapter = $this->getConfig(['view', 'adapter'], 'Twig');
+            /** @var InterfaceView view */
             $this->view = ViewFactory::getView($viewAdapter, $viewConfig);
+            $viewVars = $this->getConfig(['view', 'vars'], [])->toArray();
+            $this->view->assignArray($viewVars);
         }
         return $this->view;
     }

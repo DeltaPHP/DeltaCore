@@ -52,8 +52,23 @@ class TwigView extends AbstractView implements InterfaceView
                 }
             }
             $this->render = new \Twig_Environment($loader, $options);
-            //TODO DoIt from config
-            $this->render->addExtension(new \Twig_Extension_Debug());
+
+            $extensions = isset($config['extensions']) ? $config['extensions']: [];
+            if ($extensions instanceof Config) {
+                $extensions = $extensions->toArray();
+            }
+            foreach ($extensions as $extension) {
+                $this->render->addExtension(new $extension);
+            }
+            $filters = isset($config['filters']) ? $config['filters']: [];
+            if ($filters instanceof Config) {
+                $filters = $filters->toArray();
+            }
+            foreach ($filters as $name=>$filter) {
+                $callable = $filter[0];
+                $params = isset($filter[1]) ? $filter[1] : [];
+                $this->render->addFilter(new \Twig_SimpleFilter($name, $callable, $params));
+            }
         }
         return $this->render;
     }

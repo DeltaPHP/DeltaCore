@@ -1,12 +1,9 @@
 <?php
 namespace DeltaCore;
 
-use Acl\Model\AclManager;
 use Composer\Autoload\ClassLoader;
 use DeltaCore\Exception\AccessDeniedException;
-use DeltaRouter\Exception\NotFoundException;
 use DeltaRouter\Router;
-use DeltaUtils\ArrayUtils;
 use dTpl\InterfaceView;
 use HttpWarp\Exception\HttpUsableException;
 use HttpWarp\Request;
@@ -384,7 +381,7 @@ class Application extends \Pimple
     public function isAllow($resource = null, User $user= null)
     {
        if (isset($this["aclManager"])) {
-           /** @var AclManager $aclManager */
+           /** @var \Acl\Model\AclManager $aclManager */
            $aclManager = $this['aclManager'];
            if (!$resource) {
                /** @var Request $request */

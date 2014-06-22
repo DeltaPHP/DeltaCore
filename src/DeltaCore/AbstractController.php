@@ -181,7 +181,7 @@ abstract class AbstractController
 
     public function checkAccess()
     {
-        return true;
+        return $this->getApplication()->isAllow();
     }
 
     public function init() {return;}

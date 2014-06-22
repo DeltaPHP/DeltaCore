@@ -1,6 +1,7 @@
 <?php
 namespace DeltaCore;
 
+use Acl\Model\AclManager;
 use Composer\Autoload\ClassLoader;
 use DeltaCore\Exception\AccessDeniedException;
 use DeltaRouter\Exception\NotFoundException;
@@ -378,6 +379,37 @@ class Application extends \Pimple
             $response->setBody($html);
             $response->sendReplay();
         }
+    }
+
+    public function isAllow($resource = null, User $user= null)
+    {
+       if (isset($this["aclManager"])) {
+           /** @var AclManager $aclManager */
+           $aclManager = $this['aclManager'];
+           if (!$resource) {
+               /** @var Request $request */
+               $request = $this['request'];
+               $resource = $request->getUriNormal();
+           }
+           if (!$user) {
+               $user = $aclManager->getUserManager()->getCurrentUser();
+           }
+           return $aclManager->isAllow($resource, $user);
+       }
+       return true;
+    }
+
+    /**
+     * @return User|null
+     */
+    public function getCurrentUser()
+    {
+        if (!isset($this['userManager'])) {
+            return null;
+        }
+        /** @var UserManager $userManager */
+        $userManager = $this['userManager'];
+        return $userManager->getCurrentUser();
     }
 
 

@@ -404,7 +404,7 @@ class Application extends \Pimple
         if (!isset($this['userManager'])) {
             return null;
         }
-        /** @var UserManager $userManager */
+        /** @var \User\Model\UserManager $userManager */
         $userManager = $this['userManager'];
         return $userManager->getCurrentUser();
     }

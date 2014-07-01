@@ -59,6 +59,17 @@ class Config implements  \ArrayAccess
         return $this->childConfig[$pathKey];
     }
 
+    public function getOneIs(array $paths, $default = null)
+    {
+        foreach ($paths as $path) {
+            $data = $this->get($path);
+            if ($data) {
+                return $data;
+            }
+        }
+        return $default;
+    }
+
     /**
      * (PHP 5 &gt;= 5.0.0)<br/>
      * Whether a offset exists

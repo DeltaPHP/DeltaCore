@@ -10,7 +10,7 @@ use HttpWarp\Request;
 use HttpWarp\Response;
 use HttpWarp\Session;
 
-class Application extends \Pimple
+class Application extends DI
 {
     /**
      * @var ClassLoader

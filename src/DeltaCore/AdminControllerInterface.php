@@ -8,6 +8,7 @@ namespace DeltaCore;
 
 interface AdminControllerInterface
 {
+    public function listAction();
     public function formAction();
     public function saveAction();
     public function rmAction();

@@ -293,8 +293,10 @@ class Application extends DI
             $viewAdapter = $this->getConfig(['view', 'adapter'], 'Twig');
             /** @var InterfaceView view */
             $this->view = ViewFactory::getView($viewAdapter, $viewConfig);
-            $viewVars = $this->getConfig(['view', 'vars'], [])->toArray();
-            $this->view->assignArray($viewVars);
+            $viewVars = $this->getConfig(['view', 'vars']);
+            if ($viewVars instanceof Config) {
+                $this->view->assignArray($viewVars->toArray());
+            }
         }
         return $this->view;
     }

@@ -9,8 +9,6 @@ use DeltaCore\Prototype\Parts\SeoFields;
 
 class BaseEntityObject
 {
-    use SeoFields;
-
     protected $id;
     protected $name;
     protected $description;

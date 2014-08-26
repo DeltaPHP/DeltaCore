@@ -49,6 +49,9 @@ class Config implements  \ArrayAccess
         }
         $pathKey = implode('|', (array) $path);
         if (!isset($this->childConfig[$pathKey])) {
+            if (!ArrayUtils::issetByPath($this->configRaw, $path)) {
+                return $default;
+            }
             $needConfig = ArrayUtils::getByPath($this->configRaw, $path, $default);
             if (is_array($needConfig)) {
                 $this->childConfig[$pathKey] = new Config($needConfig);

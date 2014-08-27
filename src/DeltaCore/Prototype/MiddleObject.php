@@ -5,24 +5,18 @@
 
 namespace DeltaCore\Prototype;
 
-use DeltaCore\Prototype\Parts\SeoFields;
-
-class BaseEntityObject
+class MiddleObject extends AbstractEntity
 {
-    protected $id;
     protected $name;
     protected $description;
     protected $created;
     protected $changed;
+    protected $fieldsList;
 
-    public function setId($id)
+    function __construct()
     {
-        $this->id = $id;
-    }
-
-    public function getId()
-    {
-        return $this->id;
+        $this->setCreated(new \DateTime());
+        $this->setChanged(new \DateTime());
     }
 
     /**
@@ -57,6 +51,9 @@ class BaseEntityObject
      */
     public function setChanged($changed)
     {
+        if (is_null($changed)) {
+            return;
+        }
         $this->changed = $changed;
     }
 
@@ -74,6 +71,9 @@ class BaseEntityObject
 
     public function setCreated($created)
     {
+        if (is_null($created)) {
+            return;
+        }
         $this->created = $created;
     }
 
@@ -92,21 +92,4 @@ class BaseEntityObject
     {
         $this->description = $description;
     }
-
-    /**
-     * @return array
-     */
-    public function getFieldsList()
-    {
-        $methods = get_class_methods($this);
-        $fields = [];
-        foreach($methods as $method) {
-            if ($pos = strpos($method, "get") !== false) {
-                $field = substr($method, $pos);
-                $fields[] = $field;
-            }
-        }
-        return $fields;
-    }
-
 }

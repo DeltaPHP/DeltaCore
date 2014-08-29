@@ -66,6 +66,12 @@ class ConfigLoader
         $confObj->joinLeft($config);
     }
 
+    public function joinConfigRight(array $config)
+    {
+        $confObj = $this->getConfig();
+        $confObj->joinRight($config);
+    }
+
     /**
      * @return Config
      */
@@ -75,7 +81,7 @@ class ConfigLoader
             $defaultConfig = $this->getDefaultConfig();
             $globalConfig = $this->readConfig(self::GLOBAL_CONFIG);
             $localConfig = $this->readConfig(self::LOCAL_CONFIG);
-            $config = ArrayUtils::merge_recursive($defaultConfig, $globalConfig, $localConfig);
+            $config = ArrayUtils::mergeRecursive($defaultConfig, $globalConfig, $localConfig);
             $this->configObj = new Config($config);
         }
         return $this->configObj;

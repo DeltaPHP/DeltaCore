@@ -79,7 +79,7 @@ class TwigView extends AbstractView implements InterfaceView
             $this->setTemplate($templateName);
         }
         $vars = $this->getAssignedVars();
-        $vars = ArrayUtils::merge_recursive($vars, $params);
+        $vars = ArrayUtils::mergeRecursive($vars, $params);
         $globalVars = $this->getGlobalVars();
         $render = $this->getRender();
         foreach ($globalVars as $name=>$value) {

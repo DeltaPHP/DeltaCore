@@ -176,7 +176,7 @@ abstract class AbstractController
 
     public function redirect($url)
     {
-        return $this->getResponse()->redirect($url);
+        $this->getResponse()->redirect($url);
     }
 
     public function checkAccess()

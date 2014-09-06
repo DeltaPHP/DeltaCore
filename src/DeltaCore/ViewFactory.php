@@ -6,9 +6,16 @@
 namespace DeltaCore;
 
 use DeltaCore\View\TwigView;
+use dTpl\InterfaceView;
 
 class ViewFactory
 {
+
+    /**
+     * @param $adapterName
+     * @param Config $config
+     * @return InterfaceView
+     */
     public static function getView($adapterName, Config $config = null)
     {
         $adapterName = strtolower($adapterName);
@@ -17,7 +24,7 @@ class ViewFactory
                 $view = new TwigView();
                 $view->setConfig($config);
                 return $view;
-            break;
+                break;
             default:
                 throw new \InvalidArgumentException("View adapter $adapterName not defined");
         }

@@ -9,6 +9,7 @@ use HttpWarp\Exception\HttpUsableException;
 use HttpWarp\Request;
 use HttpWarp\Response;
 use HttpWarp\Session;
+use User\Model\User;
 
 class Application extends DI
 {
@@ -57,8 +58,8 @@ class Application extends DI
             define('ROOT_DIR', $rootDir);
         }
 
-        $this['sessions'] = function($c){
-            return $c->getSession();
+        $this['sessions'] = function(){
+            return $this->getSession();
         };
         $this['request'] = function(){
             return $this->getRequest();
@@ -73,11 +74,11 @@ class Application extends DI
             return $this->getView();
         };
 
-        $this["moduleManager"] = function($c) {
-            $modulesList = $c->getConfig("modules", [])->toArray();
+        $this["moduleManager"] = function() {
+            $modulesList = $this->getConfig("modules", [])->toArray();
             $mm = new ModuleManager($modulesList);
-            $mm->setLoader($c->getLoader());
-            $mm->setView($c->getView());
+            $mm->setLoader($this->getLoader());
+            $mm->setView($this->getView());
             return $mm;
         };
     }
@@ -354,7 +355,6 @@ class Application extends DI
                 }
             }
         }
-
         $view->setTemplate($template);
         $view->assignArray(['_controller' => $controllerName,
                             '_action'     => $actionName,
@@ -367,8 +367,12 @@ class Application extends DI
         }
 
         $controller->init();
-        $controller->$action();
+        $result = $controller->$action();
         $controller->finalize();
+
+        if (is_array($result)) {
+            $controller->getView()->assignArray($result);
+        }
 
         if ($controller->isAutoRender()) {
             $html = $controller->getView()->render();

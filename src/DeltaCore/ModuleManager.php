@@ -144,11 +144,11 @@ class ModuleManager
             if (!$path) {
                 throw new \Exception("Path for module $module not found");
             }
-            $resourcesFile = $path . "/config/routers.php";
-            if (!file_exists($resourcesFile)) {
+            $routersFile = $path . "/config/routers.php";
+            if (!file_exists($routersFile)) {
                 continue;
             }
-            $moduleRoutes = include $resourcesFile;
+            $moduleRoutes = include $routersFile;
             foreach ($moduleRoutes as $key => $route) {
                 if (is_array($route[1])) {
                     $moduleRoutes[$key][1] = [
@@ -175,6 +175,11 @@ class ModuleManager
         return $this->getListArrayConfigs("resources");
     }
 
+    public function getAdminConfig()
+    {
+        return $this->getListArrayConfigs("admin");
+    }
+
     public function getListArrayConfigs($fileConfigName, $recursiveMerge = false)
     {
         $modules = $this->getModulesList();
@@ -184,11 +189,11 @@ class ModuleManager
             if (!$path) {
                 throw new \Exception("Path for module $module not found");
             }
-            $resourcesFile = $path . "/config/{$fileConfigName}.php";
-            if (!file_exists($resourcesFile)) {
+            $configFile = $path . "/config/{$fileConfigName}.php";
+            if (!file_exists($configFile)) {
                 continue;
             }
-            $moduleResources = include $resourcesFile;
+            $moduleResources = include $configFile;
             if ($recursiveMerge) {
                 $configs = ArrayUtils::merge_recursive($configs, $moduleResources);
             } else {

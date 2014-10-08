@@ -32,13 +32,13 @@ class Config implements  \ArrayAccess
 
     public function joinLeft(array $data)
     {
-        $this->configRaw = ArrayUtils::merge_recursive($data, $this->configRaw);
+        $this->configRaw = ArrayUtils::mergeRecursive($data, $this->configRaw);
         $this->childConfig = [];
     }
 
     public function joinRight(array $data)
     {
-        $this->configRaw = ArrayUtils::merge_recursive($this->configRaw, $data);
+        $this->configRaw = ArrayUtils::mergeRecursive($this->configRaw, $data);
         $this->childConfig = [];
     }
 

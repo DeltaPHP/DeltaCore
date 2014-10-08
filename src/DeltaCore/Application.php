@@ -3,6 +3,7 @@ namespace DeltaCore;
 
 use Composer\Autoload\ClassLoader;
 use DeltaCore\Exception\AccessDeniedException;
+use DeltaCore\View\TwigView;
 use DeltaRouter\Router;
 use dTpl\InterfaceView;
 use HttpWarp\Exception\HttpUsableException;
@@ -78,7 +79,6 @@ class Application extends DI
             $modulesList = $this->getConfig("modules", [])->toArray();
             $mm = new ModuleManager($modulesList);
             $mm->setLoader($this->getLoader());
-            $mm->setView($this->getView());
             return $mm;
         };
     }
@@ -294,8 +294,29 @@ class Application extends DI
             $viewAdapter = $this->getConfig(['view', 'adapter'], 'Twig');
             /** @var InterfaceView view */
             $this->view = ViewFactory::getView($viewAdapter, $viewConfig);
-            $viewVars = $this->getConfig(['view', 'vars'], [])->toArray();
-            $this->view->assignArray($viewVars);
+            //set templates dir
+            if ($this->view instanceof TwigView) {
+                $mm = $this->getModuleManager();
+                $modules = $mm->getModulesList();
+                foreach ($modules as $moduleName) {
+                    $templatesPath = $mm->getModulePath($moduleName) . "/templates";
+                    if (file_exists($templatesPath . "/{$moduleName}")) {
+                        $this->getView()->addTemplateDir($templatesPath);
+                    }
+                }
+            }
+            $viewVars = $this->getConfig(['view', 'vars']);
+            if ($viewVars instanceof Config) {
+                $viewVars = $viewVars->toArray();
+            }
+            if (!empty($viewVars) && is_array($viewVars)) {
+                foreach($viewVars as $name=>$value) {
+                    if (is_callable($value)) {
+                        $value = call_user_func($value, $this);
+                    }
+                    $this->view->assign($name, $value);
+                }
+            }
         }
         return $this->view;
     }

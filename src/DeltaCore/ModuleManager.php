@@ -25,12 +25,6 @@ class ModuleManager
      */
     protected $loader;
 
-    /**
-     * @var AbstractView
-     */
-    protected $view;
-
-
     function __construct(array $modules)
     {
         $this->setModulesList($modules);
@@ -66,22 +60,6 @@ class ModuleManager
     }
 
     /**
-     * @param \dTpl\AbstractView $view
-     */
-    public function setView($view)
-    {
-        $this->view = $view;
-    }
-
-    /**
-     * @return \dTpl\AbstractView
-     */
-    public function getView()
-    {
-        return $this->view;
-    }
-
-    /**
      * @return \Composer\Autoload\ClassLoader
      */
     public function getLoader()
@@ -93,15 +71,9 @@ class ModuleManager
     {
         $modules = $this->getModulesList();
         foreach($modules as $moduleName) {
-            $modulePath = $this->getModulePath($moduleName);
             $class = "\\{$moduleName}\\Module";
             if(is_callable([$class, "init"])) {
                 call_user_func([$class, "init"]);
-            }
-            //add view
-            $templatesPath = $modulePath . "/templates";
-            if (file_exists($templatesPath . "/{$moduleName}")) {
-                $this->getView()->addTemplateDir($templatesPath);
             }
         }
     }
@@ -195,7 +167,7 @@ class ModuleManager
             }
             $moduleResources = include $configFile;
             if ($recursiveMerge) {
-                $configs = ArrayUtils::merge_recursive($configs, $moduleResources);
+                $configs = ArrayUtils::mergeRecursive($configs, $moduleResources);
             } else {
                 $configs = array_merge($configs, $moduleResources);
             }

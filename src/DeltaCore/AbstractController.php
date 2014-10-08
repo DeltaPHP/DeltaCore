@@ -101,6 +101,7 @@ abstract class AbstractController
         if (is_null($this->view)) {
             $viewAdapter = $this->getConfig(['view','adapter'], 'twig');
             $this->view = ViewFactory::getView($viewAdapter, $this->getConfig('view'));
+
         }
         return $this->view;
     }

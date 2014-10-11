@@ -141,7 +141,7 @@ abstract class AbstractController
 
     public function setViewTemplate($template)
     {
-        if(strpos($template, "/") == false) {
+        if(strpos($template, "/") === false) {
             $controller = $this->getControllerName();
             $module = $this->getModuleName();
             $template = $module ? "{$module}/{$controller}/{$template}" : "{$controller}/{$template}";

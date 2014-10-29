@@ -42,21 +42,4 @@ abstract class AbstractEntity
         return $this->fieldsList;
     }
 
-    public function toArray()
-    {
-        $result = [];
-        $fields = $this->getFieldsList();
-        foreach ($fields as $field) {
-            $method = "get" . ucfirst($field);
-            if (!method_exists($this, $method)) {
-                continue;
-            }
-            $value = $this->{$method}();
-            if ($value instanceof AbstractEntity) {
-                $value = $value->toArray();
-            }
-            $result[$field] = $value;
-        }
-        return $result;
-    }
 } 

@@ -10,6 +10,7 @@ trait SeoFields
 {
     protected $metaTitle;
     protected $metaDescription;
+    protected $keywords;
 
     /**
      * @return mixed
@@ -42,4 +43,21 @@ trait SeoFields
     {
         $this->metaTitle = $metaTitle;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getKeywords()
+    {
+        return $this->keywords;
+    }
+
+    /**
+     * @param mixed $keywords
+     */
+    public function setKeywords($keywords)
+    {
+        $this->keywords = $keywords;
+    }
+
 }

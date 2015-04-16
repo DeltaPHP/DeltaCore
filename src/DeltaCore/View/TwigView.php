@@ -14,6 +14,10 @@ class TwigView extends AbstractView implements InterfaceView
 {
     protected $templateExtension = 'twig';
 
+    protected $formCsrfProvider;
+    protected $formValidator;
+    protected $formFactory;
+
     public function reset()
     {
         unset($this->render);
@@ -25,6 +29,61 @@ class TwigView extends AbstractView implements InterfaceView
         $this->templateDirs = [];
     }
 
+    protected function getFormCsrfProvider()
+    {
+        if (is_null($this->formCsrfProvider)) {
+            $this->formCsrfProvider = new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\DefaultCsrfProvider(hash("md5", $_SERVER["SERVER_NAME"]));
+        }
+        return $this->formCsrfProvider;
+    }
+
+    protected function getFormValidator()
+    {
+        if (is_null($this->formValidator)) {
+            $this->formValidator = \Symfony\Component\Validator\Validation::createValidator();
+        }
+        return $this->formValidator;
+
+    }
+
+    public function initExtension($extension, \Twig_Environment $render, \Twig_Loader_Filesystem $fileSystemLoader)
+    {
+
+        if (false === strpos("\\" , $extension)) {
+            $extension = "\\" . $extension;
+        }
+        $config = $this->getConfig();
+
+        switch ($extension) {
+            case "\\TranslationExtension":
+                $config = isset($config["translationExtension"]) ? $config["translationExtension"] : [];
+                $lang = isset($config["lang"]) ? $config["lang"] : "ru";
+                $locale = isset($config["locale"]) ? $config["locale"] : "ru_RU";
+                $translator = new \Symfony\Component\Translation\Translator($locale);
+                $translator->addLoader('xlf', new \Symfony\Component\Translation\Loader\XliffFileLoader());
+                $vendorFormDir = VENDOR_DIR . '/symfony/form/Symfony/Component/Form';
+                $vendorValidatorDir = VENDOR_DIR . '/symfony/validator/Symfony/Component/Validator';
+                $translator->addResource('xlf', $vendorFormDir . "/Resources/translations/validators.{$lang}.xlf", $locale, 'validators');
+                $translator->addResource('xlf', $vendorValidatorDir . "/Resources/translations/validators.{$lang}.xlf", $locale, 'validators');
+                $extension = new \Symfony\Bridge\Twig\Extension\TranslationExtension($translator);
+                break;
+            case "\\FormExtension":
+                $config = isset($config["formExtension"]) ? $config["formExtension"] : [];
+                $templates = $config["templates"] ?: "vendor/symfony/twig-bridge/Symfony/Bridge/Twig/Resources/views/Form";
+                $templates = $this->getRootDir() . "/" . $templates;
+                $fileSystemLoader->addPath($templates);
+                $formTemplate = $config["formTheme"] ?: "form_div_layout.html.twig";
+                $formTemplate = (array) $formTemplate;
+                $formEngine = new \Symfony\Bridge\Twig\Form\TwigRendererEngine($formTemplate);
+                $formEngine->setEnvironment($render);
+                $extension = new \Symfony\Bridge\Twig\Extension\FormExtension(new \Symfony\Bridge\Twig\Form\TwigRenderer($formEngine, $this->getFormCsrfProvider()));
+                break;
+            default:
+                $extension = new $extension;;
+        }
+        return $extension;
+    }
+
     /**
      * @return \Twig_Environment
      */
@@ -33,11 +92,11 @@ class TwigView extends AbstractView implements InterfaceView
         if (is_null($this->render)) {
             $config = $this->getConfig();
             $templateDirs = $this->getTemplateDirs();
-            $loader = new \Twig_Loader_Filesystem($templateDirs);
+            $loaderFs = new \Twig_Loader_Filesystem($templateDirs);
             $templatesArray = $this->getArrayTemplates();
             if (!empty($templateArrays)) {
                 $arrayLoader = new \Twig_Loader_Array($templatesArray);
-                $loader = new \Twig_Loader_Chain([$loader, $arrayLoader]);
+                $loader = new \Twig_Loader_Chain([$loaderFs, $arrayLoader]);
             }
             $options = isset($config['options']) ? $config['options']: [];
             if ($options instanceof Config) {
@@ -51,6 +110,7 @@ class TwigView extends AbstractView implements InterfaceView
                     unset($options['cache']);
                 }
             }
+            $loader = isset($loader) ? $loader : $loaderFs;
             $this->render = new \Twig_Environment($loader, $options);
 
             $extensions = isset($config['extensions']) ? $config['extensions']: [];
@@ -58,7 +118,8 @@ class TwigView extends AbstractView implements InterfaceView
                 $extensions = $extensions->toArray();
             }
             foreach ($extensions as $extension) {
-                $this->render->addExtension(new $extension);
+                $extension = $this->initExtension($extension, $this->render, $loaderFs);
+                $this->render->addExtension($extension);
             }
             $filters = isset($config['filters']) ? $config['filters']: [];
             if ($filters instanceof Config) {
@@ -97,5 +158,17 @@ class TwigView extends AbstractView implements InterfaceView
         $loader = $this->getRender()->getLoader();
         $result = $loader->exists($template);
         return $result;
+    }
+
+    public function getFormFactory()
+    {
+        // Set up the Form component
+        if (is_null($this->formFactory)) {
+            $this->formFactory = \Symfony\Component\Form\Forms::createFormFactoryBuilder()
+                ->addExtension(new \Symfony\Component\Form\Extension\Csrf\CsrfExtension($this->getFormCsrfProvider()))
+                ->addExtension(new \Symfony\Component\Form\Extension\Validator\ValidatorExtension($this->getFormValidator()))
+                ->getFormFactory();
+        }
+        return $this->formFactory;
     }
 }

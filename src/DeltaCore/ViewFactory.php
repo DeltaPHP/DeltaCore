@@ -29,4 +29,4 @@ class ViewFactory
                 throw new \InvalidArgumentException("View adapter $adapterName not defined");
         }
     }
-} 
+}

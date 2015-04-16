@@ -5,18 +5,15 @@
 
 namespace DeltaCore\Parts;
 
-use \Symfony\Component\Form\FormBuilder;
-
 trait SymfonyForms {
 
     abstract public function getView();
 
     /**
-     * @return FormBuilder
+     * @return \Symfony\Component\Form\FormBuilder
      */
     public function createFormBuilder()
     {
         return $this->getView()->getFormFactory()->createBuilder();
     }
-
 }

@@ -5,15 +5,13 @@
 
 namespace DeltaCore\Parts;
 
-use DeltaCore\Config;
-
 trait Configurable
 {
-    /** @var  Config */
+    /** @var  \DeltaCore\Config */
     protected $config;
 
     /**
-     * @return Config
+     * @return \DeltaCore\Config
      */
     public function getConfig()
     {
@@ -21,11 +19,10 @@ trait Configurable
     }
 
     /**
-     * @param Config $config
+     * @param \DeltaCore\Config $config
      */
     public function setConfig($config)
     {
         $this->config = $config;
     }
-
 }

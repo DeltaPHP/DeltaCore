@@ -6,7 +6,6 @@
 namespace DeltaCore;
 
 use DeltaUtils\ArrayUtils;
-use Traversable;
 
 class Config implements  \ArrayAccess
 {
@@ -139,6 +138,4 @@ class Config implements  \ArrayAccess
     {
         return (array)$this->configRaw;
     }
-
-
 }

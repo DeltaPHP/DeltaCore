@@ -86,6 +86,4 @@ class ConfigLoader
         }
         return $this->configObj;
     }
-
-
 }

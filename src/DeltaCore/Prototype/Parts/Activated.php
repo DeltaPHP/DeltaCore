@@ -27,11 +27,4 @@ trait Activated {
     {
         $this->active = $active;
     }
-
-
-
-
-
-
-
 }

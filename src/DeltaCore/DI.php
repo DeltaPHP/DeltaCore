@@ -14,5 +14,4 @@ class DI extends \Pimple
             return $this[$id];
         };
     }
-
-} 
+}

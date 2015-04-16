@@ -45,5 +45,4 @@ abstract class AbstractEntity
         }
         return $this->fieldsList;
     }
-
 }

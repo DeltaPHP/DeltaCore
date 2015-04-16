@@ -59,5 +59,4 @@ trait SeoFields
     {
         $this->keywords = $keywords;
     }
-
 }

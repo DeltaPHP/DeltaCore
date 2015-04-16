@@ -36,6 +36,4 @@ interface SeoFieldsInterface {
      * @param mixed $keywords
      */
     public function setKeywords($keywords);
-
-
 }

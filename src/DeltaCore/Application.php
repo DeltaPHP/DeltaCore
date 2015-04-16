@@ -433,7 +433,4 @@ class Application extends DI
         $userManager = $this['userManager'];
         return $userManager->getCurrentUser();
     }
-
-
-
 }

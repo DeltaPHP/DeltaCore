@@ -5,12 +5,10 @@
 
 namespace DeltaCore\Parts;
 
-use DeltaCore\View\TwigView;
-
 trait SymfonyForms {
 
     /**
-     * @return TwigView
+     * @return \DeltaCore\View\TwigView
      */
     abstract public function getView();
 

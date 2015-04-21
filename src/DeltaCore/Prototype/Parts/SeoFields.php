@@ -5,6 +5,7 @@
 
 namespace DeltaCore\Prototype\Parts;
 
+use DeltaUtils\StringUtils;
 
 trait SeoFields
 {
@@ -17,6 +18,14 @@ trait SeoFields
      */
     public function getMetaDescription()
     {
+        if (empty($this->metaDescription)) {
+            $desc = $this->getDescription();
+            if (!empty($desc)) {
+                $this->metaDescription = StringUtils::cutStr($desc, 160);
+            } else {
+                $this->metaDescription = "Подробная информация  о {$this->getMetaTitle()}";
+            }
+        }
         return $this->metaDescription;
     }
 
@@ -33,6 +42,9 @@ trait SeoFields
      */
     public function getMetaTitle()
     {
+        if (empty($this->metaTitle)) {
+            $this->metaTitle = $this->getName();
+        }
         return $this->metaTitle;
     }
 

@@ -5,16 +5,26 @@
 
 namespace DeltaCore\Parts;
 
+use DeltaCore\Config;
+
 trait Configurable
 {
     /** @var  \DeltaCore\Config */
     protected $config;
 
     /**
-     * @return \DeltaCore\Config
+     * @param null $path
+     * @param null $default
+     * @return Config|null
      */
-    public function getConfig()
+    public function getConfig($path = null, $default = null)
     {
+        if (!$this->config instanceof Config) {
+            return $default;
+        }
+        if ($path)  {
+            return $this->config->get($path, $default);
+        }
         return $this->config;
     }
 

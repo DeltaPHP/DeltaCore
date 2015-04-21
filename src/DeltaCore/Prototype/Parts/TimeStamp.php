@@ -18,7 +18,7 @@ trait TimeStamp
      */
     public function getCreated()
     {
-        if (!is_null($this->created) && $this->created instanceof \DateTime) {
+        if (!is_null($this->created) && !$this->created instanceof \DateTime) {
             $this->created = new \DateTime($this->created);
         }
         return $this->created;
@@ -37,7 +37,7 @@ trait TimeStamp
      */
     public function getChanged()
     {
-        if (!is_null($this->changed) && $this->changed instanceof \DateTime) {
+        if (!is_null($this->changed) && !$this->changed instanceof \DateTime) {
             $this->changed = new \DateTime($this->changed);
         }
         return $this->changed;

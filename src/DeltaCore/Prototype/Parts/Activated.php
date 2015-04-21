@@ -20,6 +20,11 @@ trait Activated {
         return $this->active;
     }
 
+    public function getActive()
+    {
+        return $this->isActive();
+    }
+
     /**
      * @param boolean $active
      */

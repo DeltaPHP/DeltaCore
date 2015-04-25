@@ -6,7 +6,4 @@
 namespace DeltaCore;
 
 
-class AbstractModule 
-{
-
-} 
+abstract class AbstractModule{}

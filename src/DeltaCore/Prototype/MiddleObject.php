@@ -5,12 +5,16 @@
 
 namespace DeltaCore\Prototype;
 
-class MiddleObject extends AbstractEntity
+use DeltaCore\Prototype\Parts\Activated;
+use DeltaCore\Prototype\Parts\TimeStamp;
+
+class MiddleObject extends AbstractEntity implements TimeStampInterface, ActivatedInterface
 {
+    use TimeStamp;
+    use Activated;
+
     protected $name;
     protected $description;
-    protected $created;
-    protected $changed;
     protected $fieldsList;
 
     function __construct()
@@ -33,48 +37,6 @@ class MiddleObject extends AbstractEntity
     public function setName($name)
     {
         $this->name = $name;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getChanged()
-    {
-        if (!is_null($this->changed) && !$this->changed instanceof \DateTime) {
-            $this->changed = new \DateTime($this->changed);
-        }
-        return $this->changed;
-    }
-
-    /**
-     * @param mixed $changed
-     */
-    public function setChanged($changed)
-    {
-        if (is_null($changed)) {
-            return;
-        }
-        $this->changed = $changed;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCreated()
-    {
-        if (!is_null($this->created) && !$this->created instanceof \DateTime) {
-            $this->created = new \DateTime($this->created);
-        }
-        return $this->created;
-    }
-
-
-    public function setCreated($created)
-    {
-        if (is_null($created)) {
-            return;
-        }
-        $this->created = $created;
     }
 
     /**

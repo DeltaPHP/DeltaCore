@@ -53,6 +53,4 @@ trait MagicSetGetManagers
         }
         throw new \BadMethodCallException("Method " . $name . " not exist in " . get_class($this));
     }
-
-
 }

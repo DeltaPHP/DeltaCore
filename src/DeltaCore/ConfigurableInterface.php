@@ -18,4 +18,4 @@ interface ConfigurableInterface
      */
     public function setConfig($config);
 
-} 
+}

@@ -75,6 +75,10 @@ class Application extends DI
             return $this->getView();
         };
 
+        $this["config"] = function() {
+            return $this->getConfig();
+        };
+
         $this["moduleManager"] = function() {
             $modulesList = $this->getConfig("modules", [])->toArray();
             $mm = new ModuleManager($modulesList);

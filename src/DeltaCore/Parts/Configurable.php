@@ -9,23 +9,30 @@ use DeltaCore\Config;
 
 trait Configurable
 {
-    /** @var  Config */
+    /** @var  \DeltaCore\Config */
     protected $config;
 
     /**
-     * @return Config
+     * @param null $path
+     * @param null $default
+     * @return Config|null
      */
-    public function getConfig()
+    public function getConfig($path = null, $default = null)
     {
+        if (!$this->config instanceof Config) {
+            return $default;
+        }
+        if ($path)  {
+            return $this->config->get($path, $default);
+        }
         return $this->config;
     }
 
     /**
-     * @param Config $config
+     * @param \DeltaCore\Config $config
      */
     public function setConfig($config)
     {
         $this->config = $config;
     }
-
 }

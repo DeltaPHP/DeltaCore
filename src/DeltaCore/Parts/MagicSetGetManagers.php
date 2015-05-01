@@ -41,7 +41,8 @@ trait MagicSetGetManagers
                         throw new \InvalidArgumentException("try set empty object in {$managerName} manager");
                     }
                     $managerObject = $arguments[0];
-                    return $this->setManager($managerName, $managerObject);
+                    $this->setManager($managerName, $managerObject);
+                    return $this;
                     break;
                 case "get" :
                     return $this->getManager($managerName);
@@ -52,6 +53,4 @@ trait MagicSetGetManagers
         }
         throw new \BadMethodCallException("Method " . $name . " not exist in " . get_class($this));
     }
-
-
 }

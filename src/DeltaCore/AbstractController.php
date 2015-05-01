@@ -164,7 +164,14 @@ abstract class AbstractController
         for ($i = 1; $i <= $countPages; $i++) {
             $pages[] = ["id" => $i, "active" => $i === $page];
         }
+        $uri = $_SERVER['REQUEST_URI'];
+        if (strpos($uri, '?')) {
+            $path = substr($uri, 0, strpos($uri, '?'));
+        } else {
+            $path = $uri;
+        }
         return [
+            "path"          => $path,
             "page"          => $page,
             "countPages"    => $countPages,
             "offsetForPage" => ($offset >= 0) ? $offset : 0,

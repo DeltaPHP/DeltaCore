@@ -49,7 +49,7 @@ class TwigView extends AbstractView implements InterfaceView
     public function initExtension($extension, \Twig_Environment $render, \Twig_Loader_Filesystem $fileSystemLoader)
     {
 
-        if (false === strpos("\\" , $extension)) {
+        if (false === strpos($extension, "\\")) {
             $extension = "\\" . $extension;
         }
         $config = $this->getConfig();

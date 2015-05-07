@@ -154,6 +154,11 @@ class Application extends DI
         return $this->configLoader;
     }
 
+    /**
+     * @param null $path
+     * @param null $default
+     * @return Config
+     */
     public function getConfig($path = null, $default = null)
     {
         if (is_null($this->config)) {

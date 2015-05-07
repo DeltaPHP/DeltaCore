@@ -41,6 +41,11 @@ class Config implements  \ArrayAccess
         $this->childConfig = [];
     }
 
+    /**
+     * @param null $path
+     * @param null $default
+     * @return $this|null
+     */
     public function get($path = null, $default = null)
     {
         if (is_null($path)) {

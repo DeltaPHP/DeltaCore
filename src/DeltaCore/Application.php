@@ -291,7 +291,7 @@ class Application extends DI
     {
         if (is_null($this->response)) {
             $this->response = new Response();
-            $this->response->setConfig($this->getConfig('response'));
+            $this->response->setDefaults($this->getConfig('response', [])->toArray());
         }
         return $this->response;
     }
@@ -355,17 +355,20 @@ class Application extends DI
         $action = $actionName .'Action';
 
         $view = $this->getView();
+        $httpCachePath = null;
 
         if (!is_array($controller)) {
             $controllerName = lcfirst($controller);
             $template = $controllerName . '/' . $actionName;
             $controller = '\\Controller\\' . ucfirst($controllerName) . 'Controller';
+            $httpCachePath = [$controllerName, $actionName];
         } else {
-            $module = $controller["module"];
+            $module = ucfirst($controller["module"]);
             $controllerId = lcfirst($controller["controller"]);
             $controllerName = "{$module}/{$controllerId}";
             $controller = "\\{$module}\\Controller\\" . ucfirst($controllerId) . 'Controller';
             $template = "{$controllerName}/{$actionName}";
+            $httpCachePath = [$module, $controllerId, $actionName];
         }
 
         /** @var AbstractController $controller */
@@ -375,7 +378,14 @@ class Application extends DI
         }
         $controller->setApplication($this);
         $controller->setRequest($this->getRequest());
-        $controller->setResponse($this->getResponse());
+        $response = $this->getResponse();
+
+        if (!empty($httpCachePath)) {
+            array_unshift($httpCachePath, "HttpCache");
+            $httpCacheParams = $this->getConfig($httpCachePath, [])->toArray();
+            $response->setDefaults($httpCacheParams);
+        }
+        $controller->setResponse($response);
 
         if (!$view->exist($template)) {
             if ($actionName === "add" or $actionName === "edit") {

@@ -7,8 +7,9 @@ namespace DeltaCore\Prototype;
 
 
 use DeltaCore\Parts\MagicSetGetManagers;
+use DeltaUtils\StringUtils;
 
-abstract class AbstractEntity
+abstract class AbstractEntity implements ArrayableInterface, StringableIterface, ElasticEntityInterface
 {
     use MagicSetGetManagers;
 
@@ -45,4 +46,36 @@ abstract class AbstractEntity
         }
         return $this->fieldsList;
     }
+
+    public function toArray($oneField = false)
+    {
+        $fields = $this->getFieldsList();
+        $values = [];
+        foreach ($fields as $field) {
+            $method = "get" . ucfirst($field);
+            $value = $this->{$method}();
+            if ($oneField) {
+                $value = StringUtils::toString($value, $oneField);
+            } else {
+                if ($value instanceof AbstractEntity) {
+                    $value = $value->toArray($oneField);
+                }
+            }
+            $values[$field] = $value;
+        }
+
+        return $values;
+    }
+
+    public function __toString()
+    {
+        $arrayData = $this->toArray();
+        return StringUtils::toString($arrayData, true);
+    }
+
+    public function toElastic()
+    {
+        return $this->toArray();
+    }
 }
+

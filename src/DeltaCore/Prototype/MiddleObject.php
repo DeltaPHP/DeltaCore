@@ -15,7 +15,6 @@ class MiddleObject extends AbstractEntity implements TimeStampInterface, Activat
 
     protected $name;
     protected $description;
-    protected $fieldsList;
 
     function __construct()
     {

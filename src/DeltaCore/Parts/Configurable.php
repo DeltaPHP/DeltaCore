@@ -20,7 +20,7 @@ trait Configurable
     public function getConfig($path = null, $default = null)
     {
         if (!$this->config instanceof Config) {
-            return $default;
+            return is_array($default) ? new Config([]) : $default;;
         }
         if ($path)  {
             return $this->config->get($path, $default);

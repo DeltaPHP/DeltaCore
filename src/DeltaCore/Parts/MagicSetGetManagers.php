@@ -11,12 +11,12 @@ trait MagicSetGetManagers
     /** @var \DeltaDb\Repository[]|Callable[] */
     private $managers = [];
 
-    private function setManager($name, $object)
+    protected function setManager($name, $object)
     {
         $this->managers[$name] = $object;
     }
 
-    private function getManager($name)
+    protected function getManager($name)
     {
         if (!array_key_exists($name, $this->managers)) {
             return null;

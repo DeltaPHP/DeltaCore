@@ -47,23 +47,27 @@ abstract class AbstractEntity implements ArrayableInterface, StringableIterface,
         return $this->fieldsList;
     }
 
-    public function toArray($oneField = false)
+    public function toArray()
     {
         $fields = $this->getFieldsList();
         $values = [];
         foreach ($fields as $field) {
             $method = "get" . ucfirst($field);
+            if(method_exists($this, $method))
             $value = $this->{$method}();
-            if ($oneField) {
-                $value = StringUtils::toString($value, $oneField);
-            } else {
-                if ($value instanceof AbstractEntity) {
-                    $value = $value->toArray($oneField);
+            if (is_object($value)) {
+                if (method_exists($value, "toArray")) {
+                    $value = $value->toArray();
+                } elseif (method_exists($this, "__toString")) {
+                    $value = (string) $value;
+                } else {
+                    continue;
                 }
+            } elseif (is_resource($value)) {
+                continue;
             }
             $values[$field] = $value;
         }
-
         return $values;
     }
 
@@ -77,5 +81,12 @@ abstract class AbstractEntity implements ArrayableInterface, StringableIterface,
     {
         return $this->toArray();
     }
+
+    public function getElasticOptions()
+    {
+        return [];
+    }
+
+
 }
 

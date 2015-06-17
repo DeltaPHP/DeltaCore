@@ -11,6 +11,8 @@ namespace DeltaCore\Prototype;
 
 interface ElasticEntityInterface
 {
+    public function getId();
     public function toElastic();
+    public function getElasticOptions();
 
 }

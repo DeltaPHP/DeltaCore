@@ -31,6 +31,7 @@ class TwigView extends AbstractView implements InterfaceView
 
     protected function getFormCsrfProvider()
     {
+        return null;
         if (is_null($this->formCsrfProvider)) {
             $this->formCsrfProvider = new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\DefaultCsrfProvider(hash("md5", $_SERVER["SERVER_NAME"]));
         }
@@ -69,7 +70,7 @@ class TwigView extends AbstractView implements InterfaceView
                 break;
             case "\\FormExtension":
                 $config = isset($config["formExtension"]) ? $config["formExtension"] : [];
-                $templates = $config["templates"] ?: "vendor/symfony/twig-bridge/Symfony/Bridge/Twig/Resources/views/Form";
+                $templates = $config["templates"] ?: "/vendor/symfony/twig-bridge/Resources/views/Form";
                 $templates = $this->getRootDir() . "/" . $templates;
                 $fileSystemLoader->addPath($templates);
                 $formTemplate = $config["formTheme"] ?: "form_div_layout.html.twig";
@@ -165,7 +166,7 @@ class TwigView extends AbstractView implements InterfaceView
         // Set up the Form component
         if (is_null($this->formFactory)) {
             $this->formFactory = \Symfony\Component\Form\Forms::createFormFactoryBuilder()
-                ->addExtension(new \Symfony\Component\Form\Extension\Csrf\CsrfExtension($this->getFormCsrfProvider()))
+//                ->addExtension(new \Symfony\Component\Form\Extension\Csrf\CsrfExtension($this->getFormCsrfProvider()))
                 ->addExtension(new \Symfony\Component\Form\Extension\Validator\ValidatorExtension($this->getFormValidator()))
                 ->getFormFactory();
         }

@@ -13,6 +13,6 @@ interface ElasticEntityInterface
 {
     public function getId();
     public function toElastic();
-    public function getElasticOptions();
+    public static function getElasticOptions();
 
 }

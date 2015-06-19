@@ -53,20 +53,22 @@ abstract class AbstractEntity implements ArrayableInterface, StringableIterface,
         $values = [];
         foreach ($fields as $field) {
             $method = "get" . ucfirst($field);
-            if(method_exists($this, $method))
-            $value = $this->{$method}();
-            if (is_object($value)) {
-                if (method_exists($value, "toArray")) {
-                    $value = $value->toArray();
-                } elseif (method_exists($this, "__toString")) {
-                    $value = (string) $value;
-                } else {
+            if(method_exists($this, $method)) {
+                $value = $this->{$method}();
+                if (is_object($value)) {
+                    if (method_exists($value, "toArray")) {
+                        $value = $value->toArray();
+                    } elseif (method_exists($value, "__toString")) {
+                        $value = (string)$value;
+                    } else {
+                        continue;
+                    }
+
+                } elseif (is_resource($value)) {
                     continue;
                 }
-            } elseif (is_resource($value)) {
-                continue;
+                $values[$field] = $value;
             }
-            $values[$field] = $value;
         }
         return $values;
     }
@@ -82,9 +84,18 @@ abstract class AbstractEntity implements ArrayableInterface, StringableIterface,
         return $this->toArray();
     }
 
-    public function getElasticOptions()
+    public static function getElasticOptions()
     {
-        return [];
+        return [
+            '_source' => array(
+                'enabled' => true
+            ),
+            'properties' => array(
+                'id' => array(
+                    'type' => 'integer',
+                )
+            )
+        ];
     }
 
 

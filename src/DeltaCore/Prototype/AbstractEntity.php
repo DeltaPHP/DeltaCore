@@ -15,6 +15,8 @@ abstract class AbstractEntity implements ArrayableInterface, StringableIterface,
 
     protected $id;
     protected $fieldsList;
+    protected $systemFields = ["fieldsList", "elasticOptions", "systemFields"];
+    protected $notExportFields = [];
 
     public function setId($id)
     {
@@ -36,8 +38,8 @@ abstract class AbstractEntity implements ArrayableInterface, StringableIterface,
             $fields = [];
             foreach ($methods as $method) {
                 if ($pos = strpos($method, "get") !== false && strpos($method, "Manager")===false) {
-                    $field = substr($method, $pos+2);
-                    if ($field !== "fieldsList") {
+                    $field = lcfirst(substr($method, $pos+2));
+                    if (!in_array($field, $this->systemFields)) {
                         $fields[] = $field;
                     }
                 }
@@ -52,8 +54,11 @@ abstract class AbstractEntity implements ArrayableInterface, StringableIterface,
         $fields = $this->getFieldsList();
         $values = [];
         foreach ($fields as $field) {
+            if (in_array($field, $this->notExportFields)) {
+                continue;
+            }
             $method = "get" . ucfirst($field);
-            if(method_exists($this, $method)) {
+            if(is_callable([$this, $method]) ) {
                 $value = $this->{$method}();
                 if (is_object($value)) {
                     if (method_exists($value, "toArray")) {

@@ -7,9 +7,10 @@ namespace DeltaCore\Prototype;
 
 
 use DeltaCore\Parts\MagicSetGetManagers;
+use DeltaDb\EntityInterface;
 use DeltaUtils\StringUtils;
 
-abstract class AbstractEntity implements ArrayableInterface, StringableIterface, ElasticEntityInterface
+abstract class AbstractEntity implements EntityInterface, ArrayableInterface, StringableIterface, ElasticEntityInterface
 {
     use MagicSetGetManagers;
 
@@ -17,6 +18,7 @@ abstract class AbstractEntity implements ArrayableInterface, StringableIterface,
     protected $fieldsList;
     protected $systemFields = ["fieldsList", "elasticOptions", "systemFields"];
     protected $notExportFields = [];
+    protected $untrusted = false;
 
     public function setId($id)
     {
@@ -26,6 +28,22 @@ abstract class AbstractEntity implements ArrayableInterface, StringableIterface,
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isUntrusted()
+    {
+        return $this->untrusted;
+    }
+
+    /**
+     * @param boolean $untrusted
+     */
+    public function setUntrusted($untrusted = true)
+    {
+        $this->untrusted = $untrusted;
     }
 
     /**
@@ -92,14 +110,14 @@ abstract class AbstractEntity implements ArrayableInterface, StringableIterface,
     public static function getElasticOptions()
     {
         return [
-            '_source' => array(
+            '_source' => [
                 'enabled' => true
-            ),
-            'properties' => array(
-                'id' => array(
+            ],
+            'properties' => [
+                'id' => [
                     'type' => 'integer',
-                )
-            )
+                ]
+            ]
         ];
     }
 

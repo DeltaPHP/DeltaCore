@@ -15,10 +15,10 @@
         }
     },
     "require": {
-        "deltaphp/deltarouter": "dev-master",
-        "deltaphp/httpwarp": "dev-master",
-        "deltaphp/deltautils": "dev-master",
-        "deltaphp/dtpl": "dev-master",
+        "deltaphp/deltarouter": "~0.1",
+        "deltaphp/httpwarp": "~0.1",
+        "deltaphp/deltautils": "~1.0",
+        "deltaphp/dtpl": "~1.0",
         "pimple/pimple": "2.0.*@dev"
     }
 }

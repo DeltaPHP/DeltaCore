@@ -38,6 +38,11 @@ abstract class AbstractEntity implements EntityInterface, ArrayableInterface, St
         return $this->untrusted;
     }
 
+    public function isTrusted()
+    {
+        return !$this->untrusted;
+    }
+
     /**
      * @param boolean $untrusted
      */
@@ -120,7 +125,5 @@ abstract class AbstractEntity implements EntityInterface, ArrayableInterface, St
             ]
         ];
     }
-
-
 }
 

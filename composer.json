@@ -1,7 +1,7 @@
 {
     "name": "deltaphp/deltacore",
     "description": "Delta PHP framework - fast, light, easy (core)",
-    "license": "GPL-3.0+",
+    "license": "GPL-3.0",
     "minimum-stability": "dev",
     "authors": [
         {
@@ -15,10 +15,10 @@
         }
     },
     "require": {
-        "deltaphp/deltarouter": "~0.1",
-        "deltaphp/httpwarp": "~0.1",
+        "deltaphp/deltarouter": "~1.0",
+        "deltaphp/httpwarp": "~1.0",
         "deltaphp/deltautils": "~1.0",
         "deltaphp/dtpl": "~1.0",
-        "pimple/pimple": "2.0.*@dev"
+        "pimple/pimple": "3.0"
     }
 }

@@ -15,10 +15,10 @@
         }
     },
     "require": {
-        "deltaphp/deltarouter": "~1.0",
-        "deltaphp/httpwarp": "~1.0",
-        "deltaphp/deltautils": "~1.0",
-        "deltaphp/dtpl": "~1.0",
-        "pimple/pimple": "3.0"
+        "deltaphp/deltarouter": "^1.0",
+        "deltaphp/httpwarp": "^1.0",
+        "deltaphp/deltautils": "^1.0",
+        "deltaphp/dtpl": "^1.0",
+        "pimple/pimple": "^3.0"
     }
 }

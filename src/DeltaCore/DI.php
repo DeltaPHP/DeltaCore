@@ -6,7 +6,9 @@
 namespace DeltaCore;
 
 
-class DI extends \Pimple
+use Pimple\Container;
+
+class DI extends Container
 {
     public function lazyGet($id)
     {

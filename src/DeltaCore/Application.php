@@ -195,25 +195,24 @@ class Application extends DI
         return $resources;
     }
 
+    public function setRoute($route, $name = null)
+    {
+        if (is_array($route["action"])) {
+            $route["action"] = array_values($route["action"]);
+            $route["args"] = isset($route["args"]) ? array_merge($route["action"], [$route["args"]]) : $route["action"];
+            $route["action"] = [$this, 'action'];
+        }
+        $this->getRouter()->setRoute($route, $name);
+    }
+
     public function setRouters(array $routers)
     {
-        foreach($routers as $route) {
-            $path = $route[0];
-            if (count($route) === 3) {
-                $method = $route[1];
-                $closure = $route[2];
-            } else {
-                $method = Router::METHOD_ALL;
-                $closure = $route[1];
+        foreach($routers as $name=>$route) {
+            if (!isset($route["patterns"])|| !isset($route["action"])) {
+                trigger_error("Bad route format", E_USER_WARNING);
+                continue;
             }
-
-            $args = null;
-            if (is_array($closure)) {
-                $args = $closure;
-                $closure = [$this, 'action'];
-            }
-
-            $this->getRouter()->setUrl($path, $closure, $method, $args);
+            $this->setRoute($route, $name);
         }
         return true;
     }
@@ -227,12 +226,7 @@ class Application extends DI
 
     public function getErrorFunction($errorCode)
     {
-        $closure = $this->getConfig(["errors", $errorCode], function() use ($errorCode) {
-            $response = new Response();
-            $response->setBody('<!DOCTYPE html> <html lang="ru"> <head> <meta charset="utf-8"> <title>Error</title> </head> <body> <header> <h1>Error</h1> </header> </body>');
-            $response->setCode($errorCode);
-            $response->sendReplay();
-        });
+        $closure = $this->getConfig(["errors", $errorCode]);
         if ($closure instanceof Config) {
             $closure = $closure->toArray();
         }
@@ -244,9 +238,11 @@ class Application extends DI
         $errorCode = $e->getCode();
         $closure = $this->getErrorFunction($errorCode);
         if (is_array($closure)) {
-            $this->action($closure[0], $closure[1]);
+            return $this->action($closure[0], $closure[1]);
         } elseif (is_callable($closure)) {
-            call_user_func($closure);
+            return call_user_func($closure);
+        } elseif ($errorCode === 404) {
+            return $this->getResponse()->error404();
         } else {
             throw $e;
         }
@@ -349,7 +345,7 @@ class Application extends DI
         return $this->session;
     }
 
-    public function action($controller, $action)
+    public function action($controller, $action, ...$arguments)
     {
         $actionName = lcfirst($action);
         $action = $actionName .'Action';
@@ -407,7 +403,13 @@ class Application extends DI
         }
 
         $controller->init();
-        $result = $controller->$action();
+        //prepare arguments (merge arrays from args aon route params in one)
+        if (!empty($arguments)) {
+            $arguments = array_merge(...$arguments);
+        } else {
+            $arguments = [];
+        }
+        $result = $controller->$action($arguments);
         $controller->finalize();
 
         if (is_array($result)) {

@@ -30,6 +30,7 @@ abstract class AbstractController
 
     protected $autoRender = true;
 
+
     /**
      * @param $application Application
      */

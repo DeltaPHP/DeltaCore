@@ -70,9 +70,9 @@ class ModuleManager
     public function load()
     {
         $modules = $this->getModulesList();
-        foreach($modules as $moduleName) {
+        foreach ($modules as $moduleName) {
             $class = "\\{$moduleName}\\Module";
-            if(is_callable([$class, "init"])) {
+            if (is_callable([$class, "init"])) {
                 call_user_func([$class, "init"]);
             }
         }
@@ -104,6 +104,7 @@ class ModuleManager
         if (!$path) {
             return false;
         }
+
         return $path;
     }
 
@@ -121,19 +122,20 @@ class ModuleManager
                 continue;
             }
             $moduleRoutes = include $routersFile;
-            foreach ($moduleRoutes as $key => $route) {
-                if (is_array($route[1])) {
-                    $moduleRoutes[$key][1] = [
+            foreach ($moduleRoutes as $key => &$route) {
+                if (is_array($route["action"])) {
+                    $route["action"] = [
                         [
-                            "module"     => $module,
-                            "controller" => $route[1][0]
+                            "module" => $module,
+                            "controller" => $route["action"][0]
                         ],
-                        "action" => $route[1][1],
+                        "action" => $route["action"][1],
                     ];
                 }
             }
             $routers = array_merge($routers, $moduleRoutes);
         }
+
         return $routers;
     }
 
@@ -172,6 +174,7 @@ class ModuleManager
                 $configs = array_merge($configs, $moduleResources);
             }
         }
+
         return $configs;
     }
 }

@@ -4,7 +4,9 @@ namespace DeltaCore;
 use Composer\Autoload\ClassLoader;
 use DeltaCore\Exception\AccessDeniedException;
 use DeltaCore\View\TwigView;
+use DeltaRouter\Route;
 use DeltaRouter\Router;
+use DeltaUtils\ArrayUtils;
 use dTpl\InterfaceView;
 use HttpWarp\Exception\HttpUsableException;
 use HttpWarp\Request;
@@ -59,30 +61,31 @@ class Application extends DI
             define('ROOT_DIR', $rootDir);
         }
 
-        $this['sessions'] = function(){
+        $this['sessions'] = function () {
             return $this->getSession();
         };
-        $this['request'] = function(){
+        $this['request'] = function () {
             return $this->getRequest();
         };
-        $this['response'] = function(){
+        $this['response'] = function () {
             return $this->getResponse();
         };
-        $this['router'] = function(){
+        $this['router'] = function () {
             return $this->getRouter();
         };
-        $this['view'] = function(){
+        $this['view'] = function () {
             return $this->getView();
         };
 
-        $this["config"] = function() {
+        $this["config"] = function () {
             return $this->getConfig();
         };
 
-        $this["moduleManager"] = function() {
+        $this["moduleManager"] = function () {
             $modulesList = $this->getConfig("modules", [])->toArray();
             $mm = new ModuleManager($modulesList);
             $mm->setLoader($this->getLoader());
+
             return $mm;
         };
     }
@@ -127,6 +130,7 @@ class Application extends DI
         if (is_null($this->request)) {
             $this->request = new Request();
         }
+
         return $this->request;
     }
 
@@ -135,6 +139,7 @@ class Application extends DI
         if (is_null($this->router)) {
             $this->router = new Router();
         }
+
         return $this->router;
     }
 
@@ -151,6 +156,7 @@ class Application extends DI
         if (is_null($this->configLoader)) {
             $this->configLoader = new ConfigLoader();
         }
+
         return $this->configLoader;
     }
 
@@ -164,6 +170,7 @@ class Application extends DI
         if (is_null($this->config)) {
             $this->config = $this->getConfigLoader()->getConfig();
         }
+
         return $this->config->get($path, $default);
     }
 
@@ -178,6 +185,7 @@ class Application extends DI
         if (!is_array($routers)) {
             $routers = [];
         }
+
         return $routers;
     }
 
@@ -192,11 +200,15 @@ class Application extends DI
         if (!is_array($resources)) {
             $resources = [];
         }
+
         return $resources;
     }
 
     public function setRoute($route, $name = null)
     {
+        if (Route::isShort($route)) {
+            $route = Route::shortNormalize($route);
+        }
         if (is_array($route["action"])) {
             $route["action"] = array_values($route["action"]);
             $route["args"] = isset($route["args"]) ? array_merge($route["action"], [$route["args"]]) : $route["action"];
@@ -207,19 +219,16 @@ class Application extends DI
 
     public function setRouters(array $routers)
     {
-        foreach($routers as $name=>$route) {
-            if (!isset($route["patterns"])|| !isset($route["action"])) {
-                trigger_error("Bad route format", E_USER_WARNING);
-                continue;
-            }
+        foreach ($routers as $name => $route) {
             $this->setRoute($route, $name);
         }
+
         return true;
     }
 
     public function setResources(array $resources)
     {
-        foreach($resources as $name=>$value) {
+        foreach ($resources as $name => $value) {
             $this[$name] = $value;
         }
     }
@@ -230,6 +239,7 @@ class Application extends DI
         if ($closure instanceof Config) {
             $closure = $closure->toArray();
         }
+
         return $closure;
     }
 
@@ -260,7 +270,7 @@ class Application extends DI
         $modulesConfig = $mm->getConfig();
         $this->getConfigLoader()->joinConfigLeft($modulesConfig);
 
-        $globalResources =$this->readResources();
+        $globalResources = $this->readResources();
         $resources = $mm->getResources();
         $resources = array_merge($resources, $globalResources);
         $this->setResources($resources);
@@ -269,7 +279,7 @@ class Application extends DI
 
         /** @var \Closure[] $initClosures */
         $initClosures = $this->getConfig("init", [])->toArray();
-        foreach($initClosures as $initClosure) {
+        foreach ($initClosures as $initClosure) {
             if (is_callable($initClosure)) {
                 call_user_func($initClosure, $this);
             }
@@ -280,6 +290,7 @@ class Application extends DI
         } catch (HttpUsableException $e) {
             $this->catchRunException($e);
         }
+
         return;
     }
 
@@ -289,6 +300,7 @@ class Application extends DI
             $this->response = new Response();
             $this->response->setDefaults($this->getConfig('response', [])->toArray());
         }
+
         return $this->response;
     }
 
@@ -315,7 +327,7 @@ class Application extends DI
                 $viewVars = $viewVars->toArray();
             }
             if (!empty($viewVars) && is_array($viewVars)) {
-                foreach($viewVars as $name=>$value) {
+                foreach ($viewVars as $name => $value) {
                     if (is_callable($value)) {
                         $value = call_user_func($value, $this);
                     }
@@ -323,6 +335,7 @@ class Application extends DI
                 }
             }
         }
+
         return $this->view;
     }
 
@@ -342,13 +355,14 @@ class Application extends DI
         if (is_null($this->session)) {
             $this->session = new Session();
         }
+
         return $this->session;
     }
 
     public function action($controller, $action, ...$arguments)
     {
         $actionName = lcfirst($action);
-        $action = $actionName .'Action';
+        $action = $actionName . 'Action';
 
         $view = $this->getView();
         $httpCachePath = null;
@@ -392,9 +406,10 @@ class Application extends DI
             }
         }
         $view->setTemplate($template);
-        $view->assignArray(['_controller' => $controllerName,
-                            '_action'     => $actionName,
-                            '_path'       => $controllerName . '/' . $actionName
+        $view->assignArray([
+            '_controller' => $controllerName,
+            '_action' => $actionName,
+            '_path' => $controllerName . '/' . $actionName
         ]);
         $controller->setView($view);
 
@@ -424,22 +439,24 @@ class Application extends DI
         }
     }
 
-    public function isAllow($resource = null, User $user= null)
+    public function isAllow($resource = null, User $user = null)
     {
-       if (isset($this["aclManager"])) {
-           /** @var \Acl\Model\AclManager $aclManager */
-           $aclManager = $this['aclManager'];
-           if (!$resource) {
-               /** @var Request $request */
-               $request = $this['request'];
-               $resource = $request->getUriNormal();
-           }
-           if (!$user) {
-               $user = $aclManager->getUserManager()->getCurrentUser();
-           }
-           return $aclManager->isAllow($resource, $user);
-       }
-       return true;
+        if (isset($this["aclManager"])) {
+            /** @var \Acl\Model\AclManager $aclManager */
+            $aclManager = $this['aclManager'];
+            if (!$resource) {
+                /** @var Request $request */
+                $request = $this['request'];
+                $resource = $request->getUriNormal();
+            }
+            if (!$user) {
+                $user = $aclManager->getUserManager()->getCurrentUser();
+            }
+
+            return $aclManager->isAllow($resource, $user);
+        }
+
+        return true;
     }
 
     /**
@@ -452,6 +469,7 @@ class Application extends DI
         }
         /** @var \User\Model\UserManager $userManager */
         $userManager = $this['userManager'];
+
         return $userManager->getCurrentUser();
     }
 }

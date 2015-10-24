@@ -9,7 +9,7 @@ namespace DeltaCore;
 use Composer\Autoload\ClassLoader;
 use DeltaUtils\ArrayUtils;
 use DeltaUtils\Parts\InnerCache;
-use dTpl\AbstractView;
+use DeltaRouter\Route;
 
 class ModuleManager
 {
@@ -123,6 +123,9 @@ class ModuleManager
             }
             $moduleRoutes = include $routersFile;
             foreach ($moduleRoutes as $key => &$route) {
+                if (Route::isShort($route)) {
+                    $route = Route::shortNormalize($route);
+                }
                 if (is_array($route["action"])) {
                     $route["action"] = [
                         [

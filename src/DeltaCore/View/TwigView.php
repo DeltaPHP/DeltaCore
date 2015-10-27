@@ -5,6 +5,7 @@
 
 namespace DeltaCore\View;
 
+use Assetic\Factory\AssetFactory;
 use DeltaCore\Config;
 use dTpl\AbstractView;
 use dTpl\InterfaceView;
@@ -50,7 +51,7 @@ class TwigView extends AbstractView implements InterfaceView
     public function initExtension($extension, \Twig_Environment $render, \Twig_Loader_Filesystem $fileSystemLoader)
     {
 
-        if (false === strpos($extension, "\\")) {
+        if (0 !== strpos($extension, "\\")) {
             $extension = "\\" . $extension;
         }
         $config = $this->getConfig();
@@ -78,6 +79,14 @@ class TwigView extends AbstractView implements InterfaceView
                 $formEngine = new \Symfony\Bridge\Twig\Form\TwigRendererEngine($formTemplate);
                 $formEngine->setEnvironment($render);
                 $extension = new \Symfony\Bridge\Twig\Extension\FormExtension(new \Symfony\Bridge\Twig\Form\TwigRenderer($formEngine, $this->getFormCsrfProvider()));
+                break;
+            case "\\Assetic\\Extension\\Twig\\AsseticExtension":
+                $config = isset($config["assetic"]) ? $config["assetic"] : [];
+                $factoryConfig = isset($config["factory"]) ? $config["factory"] : [];
+                $root = isset($factoryConfig["root"]) ? $factoryConfig["root"] : PUBLIC_DIR . "/assets/";
+                $debug = isset($factoryConfig["debug"]) ? $factoryConfig["debug"] : false;
+                $factory = new AssetFactory($root, $debug);
+                $extension = new \Assetic\Extension\Twig\AsseticExtension($factory);
                 break;
             default:
                 $extension = new $extension;;

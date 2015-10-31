@@ -1,8 +1,9 @@
 {
     "name": "deltaphp/deltacore",
     "description": "Delta PHP framework - fast, light, easy (core)",
-    "license": "GPL-3.0",
+    "license": "MIT",
     "minimum-stability": "dev",
+    "prefer-stable": true,
     "authors": [
         {
             "name": "Vasiliy Shvakin",

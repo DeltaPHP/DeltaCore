@@ -9,13 +9,34 @@ use DeltaUtils\ArrayUtils;
 
 class Config implements  \ArrayAccess
 {
+    const DYN_CONF = "__dynamic__";
+
     protected $configRaw;
 
     protected $childConfig = [];
 
-    function __construct(array $config)
+    protected $environment;
+
+    function __construct(array $config, $environment = null)
     {
         $this->set($config);
+        $this->setEnvironment($environment);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEnvironment()
+    {
+        return $this->environment;
+    }
+
+    /**
+     * @param mixed $environment
+     */
+    public function setEnvironment($environment)
+    {
+        $this->environment = $environment;
     }
 
     public function set($data, array $path = null)
@@ -26,7 +47,7 @@ class Config implements  \ArrayAccess
             $this->configRaw = (array) $data;
             return;
         }
-        $this->configRaw = ArrayUtils::setByPath($this->configRaw, $path, $data);
+        $this->configRaw = ArrayUtils::set($this->configRaw, $path, $data);
     }
 
     public function joinLeft(array $data)
@@ -42,7 +63,7 @@ class Config implements  \ArrayAccess
     }
 
     /**
-     * @param null $path
+     * @param array|string $path
      * @param null $default
      * @return $this|null
      */
@@ -54,11 +75,17 @@ class Config implements  \ArrayAccess
         $pathKey = implode('|', (array) $path);
         if (!isset($this->childConfig[$pathKey])) {
             if (!ArrayUtils::issetByPath($this->configRaw, $path)) {
-                return is_array($default) ? new Config([]) : $default;
+                return is_array($default) && !is_callable($default) ? new Config([], $this->getEnvironment()) : $default;
             }
-            $needConfig = ArrayUtils::getByPath($this->configRaw, $path, $default);
+            $needConfig = ArrayUtils::get($this->configRaw, $path, $default);
             if (is_array($needConfig)) {
-                $this->childConfig[$pathKey] = new Config($needConfig);
+                $firstElement = reset($needConfig);
+                if (key($needConfig) === self::DYN_CONF && is_callable($firstElement)) {
+                    $needConfig = call_user_func($firstElement, $this->getEnvironment());
+                }
+            }
+            if (is_array($needConfig) && !is_callable($needConfig)) {
+                $this->childConfig[$pathKey] = new Config($needConfig, $this->getEnvironment());
             } else {
                 $this->childConfig[$pathKey] = $needConfig;
             }

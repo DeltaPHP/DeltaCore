@@ -72,17 +72,14 @@ class ConfigLoader
         $confObj->joinRight($config);
     }
 
-    /**
-     * @return Config
-     */
-    public function getConfig()
+    public function getConfig($environment = null)
     {
         if (is_null($this->configObj)) {
             $defaultConfig = $this->getDefaultConfig();
             $globalConfig = $this->readConfig(self::GLOBAL_CONFIG);
             $localConfig = $this->readConfig(self::LOCAL_CONFIG);
             $config = ArrayUtils::mergeRecursive($defaultConfig, $globalConfig, $localConfig);
-            $this->configObj = new Config($config);
+            $this->configObj = new Config($config, $environment);
         }
         return $this->configObj;
     }

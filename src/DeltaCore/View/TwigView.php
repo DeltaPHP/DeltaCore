@@ -7,6 +7,7 @@ namespace DeltaCore\View;
 
 use Assetic\Factory\AssetFactory;
 use DeltaCore\Config;
+use DeltaRouter\Router;
 use dTpl\AbstractView;
 use dTpl\InterfaceView;
 use DeltaUtils\ArrayUtils;
@@ -81,12 +82,18 @@ class TwigView extends AbstractView implements InterfaceView
                 $extension = new \Symfony\Bridge\Twig\Extension\FormExtension(new \Symfony\Bridge\Twig\Form\TwigRenderer($formEngine, $this->getFormCsrfProvider()));
                 break;
             case "\\Assetic\\Extension\\Twig\\AsseticExtension":
-                $config = isset($config["assetic"]) ? $config["assetic"] : [];
+                $config = isset($config["asseticExtension"]) ? $config["asseticExtension"] : [];
                 $factoryConfig = isset($config["factory"]) ? $config["factory"] : [];
                 $root = isset($factoryConfig["root"]) ? $factoryConfig["root"] : PUBLIC_DIR . "/assets/";
                 $debug = isset($factoryConfig["debug"]) ? $factoryConfig["debug"] : false;
                 $factory = new AssetFactory($root, $debug);
                 $extension = new \Assetic\Extension\Twig\AsseticExtension($factory);
+                break;
+            case "\\DeltaTwigExt\\UrlExtension" :
+                $config = isset($config["urlExtension"]) ? $config["urlExtension"] : [];
+                $routeGenerator = isset($config["routeGenerator"]) ? $config["routeGenerator"] : [new Router(), "getUrl"];
+                $extension = new \DeltaTwigExt\UrlExtension();
+                $extension->setRouteGenerator($routeGenerator);
                 break;
             default:
                 $extension = new $extension;;

@@ -9,6 +9,6 @@ namespace DeltaCore;
 interface AdminControllerInterface
 {
     public function listAction();
-    public function formAction();
-    public function rmAction();
+    public function formAction(array $params = []);
+    public function rmAction(array $params);
 }

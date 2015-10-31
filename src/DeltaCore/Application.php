@@ -168,7 +168,7 @@ class Application extends DI
     public function getConfig($path = null, $default = null)
     {
         if (is_null($this->config)) {
-            $this->config = $this->getConfigLoader()->getConfig();
+            $this->config = $this->getConfigLoader()->getConfig($this);
         }
 
         return $this->config->get($path, $default);

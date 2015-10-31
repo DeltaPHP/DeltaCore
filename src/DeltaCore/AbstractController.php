@@ -197,4 +197,9 @@ abstract class AbstractController
 
     public function finalize() {return;}
 
+    public function getRouteUrl($routeId, array $params = [])
+    {
+        return $this->getApplication()->getRouter()->getUrl($routeId, $params);
+    }
+
 }

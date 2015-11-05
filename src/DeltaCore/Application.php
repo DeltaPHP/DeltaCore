@@ -447,7 +447,7 @@ class Application extends DI
             if (!$resource) {
                 /** @var Request $request */
                 $request = $this['request'];
-                $resource = $request->getUriNormal();
+                $resource = (string)$request->getUrl()->getPath();
             }
             if (!$user) {
                 $user = $aclManager->getUserManager()->getCurrentUser();

@@ -7,10 +7,12 @@ namespace DeltaCore\View;
 
 use Assetic\Factory\AssetFactory;
 use DeltaCore\Config;
+use DeltaCore\Exception\InvalidConfigurationException;
 use DeltaRouter\Router;
 use dTpl\AbstractView;
 use dTpl\InterfaceView;
 use DeltaUtils\ArrayUtils;
+use User\Model\UserManager;
 
 class TwigView extends AbstractView implements InterfaceView
 {
@@ -94,6 +96,14 @@ class TwigView extends AbstractView implements InterfaceView
                 $routeGenerator = isset($config["routeGenerator"]) ? $config["routeGenerator"] : [new Router(), "getUrl"];
                 $extension = new \DeltaTwigExt\UrlExtension();
                 $extension->setRouteGenerator($routeGenerator);
+                break;
+            case "\\User\\Twig\\UserExtension" :
+                $userManager = ArrayUtils::get($config, ["userExtension", "userManager"]);
+                if (!$userManager instanceof UserManager) {
+                    throw new InvalidConfigurationException("for userExtension please add userManager in config");
+                }
+                $extension = new \User\Twig\UserExtension();
+                $extension->setUserManager($userManager);
                 break;
             default:
                 $extension = new $extension;;

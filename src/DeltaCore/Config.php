@@ -6,8 +6,9 @@
 namespace DeltaCore;
 
 use DeltaUtils\ArrayUtils;
+use Traversable;
 
-class Config implements  \ArrayAccess
+class Config implements  \ArrayAccess, \IteratorAggregate
 {
     const DYN_CONF = "__dynamic__";
 
@@ -170,4 +171,10 @@ class Config implements  \ArrayAccess
     {
         return (array)$this->configRaw;
     }
+
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->toArray());
+    }
+
 }

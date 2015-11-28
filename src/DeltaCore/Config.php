@@ -94,6 +94,15 @@ class Config implements  \ArrayAccess, \IteratorAggregate
         return $this->childConfig[$pathKey];
     }
 
+    public function getOrThrow($path)
+    {
+        $data = $this->get($path);
+        if (null === $data) {
+            throw new \Exception("$path not found in config");
+        }
+        return $data;
+    }
+
     public function getOneIs(array $paths, $default = null)
     {
         foreach ($paths as $path) {

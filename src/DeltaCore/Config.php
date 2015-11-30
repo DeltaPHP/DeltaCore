@@ -159,7 +159,11 @@ class Config implements  \ArrayAccess, \IteratorAggregate
      */
     public function offsetSet($offset, $value)
     {
-        throw new \LogicException('Config can`t change on runtime');
+        $this->configRaw[$offset] = $value;
+        if (isset($this->childConfig[$offset])) {
+            unset($this->childConfig[$offset]);
+        }
+
     }
 
     /**
@@ -173,7 +177,12 @@ class Config implements  \ArrayAccess, \IteratorAggregate
      */
     public function offsetUnset($offset)
     {
-        throw new \LogicException('Config can`t change on runtime');
+        if (isset($this->configRaw[$offset])) {
+            unset($this->configRaw[$offset]);
+        }
+        if (isset($this->childConfig[$offset])) {
+            unset($this->childConfig[$offset]);
+        }
     }
 
     public function toArray()

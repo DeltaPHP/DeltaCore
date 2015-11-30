@@ -9,6 +9,7 @@ use Assetic\Factory\AssetFactory;
 use DeltaCore\Config;
 use DeltaCore\Exception\InvalidConfigurationException;
 use DeltaRouter\Router;
+use DeltaUtils\StringUtils;
 use dTpl\AbstractView;
 use dTpl\InterfaceView;
 use DeltaUtils\ArrayUtils;
@@ -97,6 +98,18 @@ class TwigView extends AbstractView implements InterfaceView
                 $extension = new \DeltaTwigExt\UrlExtension();
                 $extension->setRouteGenerator($routeGenerator);
                 break;
+            case "\\DeltaTwigExt\\AssetExtension" :
+                $extension = new \DeltaTwigExt\AssetExtension();
+                $assetsPaths = ArrayUtils::get($config, ["assetExtension", "paths"], $extension->getPaths());
+                if ($assetsPaths instanceof  Config) {
+                    $assetsPaths = $assetsPaths->toArray();
+                }
+                if (isset($config["themesDir"]) && isset($config["theme"])) {
+                    $themePath = ROOT_DIR . "/" .$config["themesDir"] ."/" . $config["theme"];
+                    array_unshift($assetsPaths, $themePath);
+                    $extension->setPaths($assetsPaths);
+                }
+                break;
             case "\\User\\Twig\\UserExtension" :
                 $userManager = ArrayUtils::get($config, ["userExtension", "userManager"]);
                 if (!$userManager instanceof UserManager) {
@@ -106,7 +119,12 @@ class TwigView extends AbstractView implements InterfaceView
                 $extension->setUserManager($userManager);
                 break;
             default:
-                $extension = new $extension;;
+                $extName = $extension;
+                $extension = new $extension;
+                if (method_exists($extension, "setConfig")) {
+                    $extConfig = ArrayUtils::get($config, [lcfirst(StringUtils::cutClassName($extName))], []);
+                    $extension->setConfig($extConfig);
+                }
         }
         return $extension;
     }

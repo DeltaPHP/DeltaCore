@@ -105,6 +105,10 @@ class TwigView extends AbstractView implements InterfaceView
                     $assetsPaths = $assetsPaths->toArray();
                 }
                 if (isset($config["themesDir"]) && isset($config["theme"])) {
+                    if ($config["theme"] !== "default") {
+                        $themePath = ROOT_DIR . "/" .$config["themesDir"] ."/default";
+                        array_unshift($assetsPaths, $themePath);
+                    }
                     $themePath = ROOT_DIR . "/" .$config["themesDir"] ."/" . $config["theme"];
                     array_unshift($assetsPaths, $themePath);
                     $extension->setPaths($assetsPaths);

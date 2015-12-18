@@ -12,15 +12,23 @@ class ConfigLoader
 {
     const LOCAL_CONFIG = 'local';
     const GLOBAL_CONFIG = 'global';
+    const LEVEL_APP = "App";
+    const LEVEL_PROJECT = "Project";
+    const LEVELS = [self::LEVEL_APP, self::LEVEL_PROJECT];
 
-    protected $configDir;
+    protected $configDirs;
     protected $configObj;
     protected $defaultConfig = [];
 
-    function __construct($configDir = null)
+    function __construct(array $configDirs = null)
     {
-        $configDir = $configDir ?: ROOT_DIR . '/config';
-        $this->setConfigDir($configDir);
+        if (empty($configDirs)) {
+            $configDirs = [
+                self::LEVEL_APP => ROOT_DIR . '/App/config',
+                self::LEVEL_PROJECT => ROOT_DIR . '/config',
+            ];
+        }
+        $this->setConfigDirs($configDirs);
     }
 
     public function setDefaultConfig(array $config)
@@ -35,24 +43,24 @@ class ConfigLoader
     }
 
     /**
-     * @param mixed $configDir
+     * @param mixed $configDirs
      */
-    public function setConfigDir($configDir)
+    public function setConfigDirs($configDirs)
     {
-        $this->configDir = $configDir;
+        $this->configDirs = $configDirs;
     }
 
     /**
      * @return mixed
      */
-    public function getConfigDir()
+    public function getConfigDir($level)
     {
-        return $this->configDir;
+        return $this->configDirs[$level];
     }
 
-    public function readConfig($type)
+    public function readConfig($level, $type)
     {
-        $file = $this->getConfigDir() . "/{$type}.config.php";
+        $file = $this->getConfigDir($level) . "/{$type}.config.php";
         if (file_exists($file)) {
             return (array) include ($file);
         } else {
@@ -76,9 +84,12 @@ class ConfigLoader
     {
         if (is_null($this->configObj)) {
             $defaultConfig = $this->getDefaultConfig();
-            $globalConfig = $this->readConfig(self::GLOBAL_CONFIG);
-            $localConfig = $this->readConfig(self::LOCAL_CONFIG);
-            $config = ArrayUtils::mergeRecursive($defaultConfig, $globalConfig, $localConfig);
+            $appGlobalConfig = $this->readConfig(self::LEVEL_APP, self::GLOBAL_CONFIG);
+            $appLocalConfig = $this->readConfig(self::LEVEL_APP, self::LOCAL_CONFIG);
+            $projectGlobalConfig = $this->readConfig(self::LEVEL_PROJECT, self::GLOBAL_CONFIG);
+            $projectLocalConfig = $this->readConfig(self::LEVEL_PROJECT, self::LOCAL_CONFIG);
+
+            $config = ArrayUtils::mergeRecursive($defaultConfig, $appGlobalConfig, $appLocalConfig, $projectGlobalConfig, $projectLocalConfig);
             $this->configObj = new Config($config, $environment);
         }
         return $this->configObj;

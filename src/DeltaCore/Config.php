@@ -6,7 +6,6 @@
 namespace DeltaCore;
 
 use DeltaUtils\ArrayUtils;
-use Traversable;
 
 class Config implements  \ArrayAccess, \IteratorAggregate
 {
@@ -76,7 +75,7 @@ class Config implements  \ArrayAccess, \IteratorAggregate
         $pathKey = implode('|', (array) $path);
         if (!isset($this->childConfig[$pathKey])) {
             if (!ArrayUtils::issetByPath($this->configRaw, $path)) {
-                return is_array($default) && !is_callable($default) ? new Config([], $this->getEnvironment()) : $default;
+                return is_array($default) && !is_callable($default) ? new Config($default, $this->getEnvironment()) : $default;
             }
             $needConfig = ArrayUtils::get($this->configRaw, $path, $default);
             if (is_array($needConfig)) {

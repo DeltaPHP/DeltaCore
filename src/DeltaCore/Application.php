@@ -6,7 +6,7 @@ use DeltaCore\Exception\AccessDeniedException;
 use DeltaCore\View\TwigView;
 use DeltaRouter\Route;
 use DeltaRouter\Router;
-use DeltaUtils\ArrayUtils;
+use DeltaUtils\FileSystem;
 use dTpl\InterfaceView;
 use HttpWarp\Exception\HttpUsableException;
 use HttpWarp\Request;
@@ -176,31 +176,21 @@ class Application extends DI
 
     public function readRouters()
     {
-        $routersFile = ROOT_DIR . '/config/routers.php';
-        if (!file_exists($routersFile)) {
-            return [];
-        }
-        $routers = include $routersFile;
-
-        if (!is_array($routers)) {
-            $routers = [];
-        }
-
+        $appRoutersPath = $this->getConfigLoader()->getConfigDir(ConfigLoader::LEVEL_APP) . "/routers.php";
+        $projectRoutersPath = $this->getConfigLoader()->getConfigDir(ConfigLoader::LEVEL_PROJECT) . "/routers.php";
+        $appRouters = FileSystem::getPhpConfig($appRoutersPath);
+        $projectRouters = FileSystem::getPhpConfig($projectRoutersPath);
+        $routers = array_merge($appRouters, $projectRouters);
         return $routers;
     }
 
     public function readResources()
     {
-        $resourcesFile = ROOT_DIR . '/config/resources.php';
-        if (!file_exists($resourcesFile)) {
-            return [];
-        }
-        $resources = include $resourcesFile;
-
-        if (!is_array($resources)) {
-            $resources = [];
-        }
-
+        $appResourcesPath = $this->getConfigLoader()->getConfigDir(ConfigLoader::LEVEL_APP) . "/resources.php";
+        $projectResourcesPath = $this->getConfigLoader()->getConfigDir(ConfigLoader::LEVEL_PROJECT) . "/resources.php";
+        $appResources = FileSystem::getPhpConfig($appResourcesPath);
+        $projectResources = FileSystem::getPhpConfig($projectResourcesPath);
+        $resources = array_merge($appResources, $projectResources);
         return $resources;
     }
 
@@ -382,6 +372,9 @@ class Application extends DI
         }
 
         /** @var AbstractController $controller */
+        if (!$this->getLoader()->findFile($controller)) {
+            $controller = "\\App" . $controller;
+        }
         $controller = new $controller();
         if (!$controller instanceof AbstractController) {
             throw new \ErrorException();
@@ -398,7 +391,7 @@ class Application extends DI
         $controller->setResponse($response);
 
         if (!$view->exist($template)) {
-            if ($actionName === "add" or $actionName === "edit") {
+            if ($actionName === "add" || $actionName === "edit") {
                 $template2 = "{$controllerName}/form";
                 if ($view->exist($template2)) {
                     $template = $template2;

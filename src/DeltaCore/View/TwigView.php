@@ -37,10 +37,6 @@ class TwigView extends AbstractView implements InterfaceView
     protected function getFormCsrfProvider()
     {
         return null;
-        if (is_null($this->formCsrfProvider)) {
-            $this->formCsrfProvider = new \Symfony\Component\Form\Extension\Csrf\CsrfProvider\DefaultCsrfProvider(hash("md5", $_SERVER["SERVER_NAME"]));
-        }
-        return $this->formCsrfProvider;
     }
 
     protected function getFormValidator()

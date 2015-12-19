@@ -8,9 +8,10 @@ namespace DeltaCore\Prototype;
 
 use DeltaCore\Parts\MagicSetGetManagers;
 use DeltaDb\EntityInterface;
+use DeltaUtils\Object\Prototype\StringableInterface;
 use DeltaUtils\StringUtils;
 
-abstract class AbstractEntity implements EntityInterface, ArrayableInterface, StringableIterface, ElasticEntityInterface
+abstract class AbstractEntity implements EntityInterface, ArrayableInterface, StringableInterface, ElasticEntityInterface
 {
     use MagicSetGetManagers;
 

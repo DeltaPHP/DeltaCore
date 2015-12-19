@@ -3,6 +3,7 @@ namespace DeltaCore;
 
 use Composer\Autoload\ClassLoader;
 use DeltaCore\Exception\AccessDeniedException;
+use DeltaCore\Prototype\ConfigInterface;
 use DeltaCore\View\TwigView;
 use DeltaRouter\Route;
 use DeltaRouter\Router;
@@ -14,7 +15,7 @@ use HttpWarp\Response;
 use HttpWarp\Session;
 use User\Model\User;
 
-class Application extends DI
+class Application extends DI implements ConfigInterface
 {
     /**
      * @var ClassLoader

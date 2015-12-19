@@ -6,13 +6,10 @@
 namespace DeltaCore;
 
 
-interface ConfigurableInterface
-{
-    /**
-     * @return Config|null
-     */
-    public function getConfig();
+use DeltaCore\Prototype\ConfigInterface;
 
+interface ConfigurableInterface extends ConfigInterface
+{
     /**
      * @param Config $config
      */

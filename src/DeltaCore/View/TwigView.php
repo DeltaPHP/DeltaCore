@@ -11,11 +11,11 @@ use DeltaCore\Exception\InvalidConfigurationException;
 use DeltaRouter\Router;
 use DeltaUtils\StringUtils;
 use dTpl\AbstractView;
-use dTpl\InterfaceView;
+use dTpl\ViewInterface;
 use DeltaUtils\ArrayUtils;
 use User\Model\UserManager;
 
-class TwigView extends AbstractView implements InterfaceView
+class TwigView extends AbstractView implements ViewInterface
 {
     protected $templateExtension = 'twig';
 

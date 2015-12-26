@@ -4,7 +4,7 @@ namespace DeltaCore;
 
 use HttpWarp\Request;
 use HttpWarp\Response;
-use dTpl\InterfaceView;
+use dTpl\ViewInterface;
 
 abstract class AbstractController
 {
@@ -24,7 +24,7 @@ abstract class AbstractController
     protected $response;
 
     /**
-     * @var InterfaceView
+     * @var ViewInterface
      */
     protected $view;
 
@@ -87,7 +87,7 @@ abstract class AbstractController
     }
 
     /**
-     * @param InterfaceView $view
+     * @param ViewInterface $view
      */
     public function setView($view)
     {
@@ -95,7 +95,7 @@ abstract class AbstractController
     }
 
     /**
-     * @return InterfaceView
+     * @return ViewInterface
      */
     public function getView()
     {

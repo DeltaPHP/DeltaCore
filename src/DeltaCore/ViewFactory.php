@@ -6,7 +6,6 @@
 namespace DeltaCore;
 
 use DeltaCore\View\TwigView;
-use dTpl\InterfaceView;
 
 class ViewFactory
 {
@@ -14,7 +13,7 @@ class ViewFactory
     /**
      * @param $adapterName
      * @param Config $config
-     * @return InterfaceView
+     * @return \dTpl\ViewInterface
      */
     public static function getView($adapterName, Config $config = null)
     {

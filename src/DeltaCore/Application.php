@@ -8,7 +8,7 @@ use DeltaCore\View\TwigView;
 use DeltaRouter\Route;
 use DeltaRouter\Router;
 use DeltaUtils\FileSystem;
-use dTpl\InterfaceView;
+use dTpl\ViewInterface;
 use HttpWarp\Exception\HttpUsableException;
 use HttpWarp\Request;
 use HttpWarp\Response;
@@ -35,7 +35,7 @@ class Application extends DI implements ConfigInterface
      */
     protected $config;
     /**
-     * @var InterfaceView
+     * @var ViewInterface
      */
     protected $view;
 
@@ -300,7 +300,7 @@ class Application extends DI implements ConfigInterface
         if (is_null($this->view)) {
             $viewConfig = $this->getConfig('view');
             $viewAdapter = $this->getConfig(['view', 'adapter'], 'Twig');
-            /** @var InterfaceView view */
+            /** @var ViewInterface view */
             $this->view = ViewFactory::getView($viewAdapter, $viewConfig);
             //set templates dir
             if ($this->view instanceof TwigView) {

@@ -249,7 +249,7 @@ class Application extends DI implements ConfigInterface
         }
     }
 
-    public function run()
+    public function init()
     {
         $mm = $this->getModuleManager();
 
@@ -275,14 +275,17 @@ class Application extends DI implements ConfigInterface
                 call_user_func($initClosure, $this);
             }
         }
+    }
+
+    public function run()
+    {
+        $this->init();
 
         try {
             $this->getRouter()->run();
         } catch (HttpUsableException $e) {
             $this->catchRunException($e);
         }
-
-        return;
     }
 
     public function getResponse()

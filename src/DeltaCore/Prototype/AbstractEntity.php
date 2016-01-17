@@ -23,7 +23,7 @@ abstract class AbstractEntity implements EntityInterface, ArrayableInterface, St
 
     public function setId($id)
     {
-        $this->id = $id;
+        $this->id = (integer) $id;
     }
 
     public function getId()

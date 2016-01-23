@@ -311,7 +311,7 @@ class Application extends DI implements ConfigInterface
                 $modules = $mm->getModulesList();
                 foreach ($modules as $moduleName) {
                     $templatesPath = $mm->getModulePath($moduleName) . "/templates";
-                    if (file_exists($templatesPath . "/{$moduleName}")) {
+                    if (file_exists($templatesPath)) {
                         $this->getView()->addTemplateDir($templatesPath);
                     }
                 }

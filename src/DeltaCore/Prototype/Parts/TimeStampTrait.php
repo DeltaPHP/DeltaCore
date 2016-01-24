@@ -3,7 +3,7 @@
 namespace DeltaCore\Prototype\Parts;
 
 
-trait TimeStamp
+trait TimeStampTrait
 {
     use CreatedTrait;
     use ChangedTrait;

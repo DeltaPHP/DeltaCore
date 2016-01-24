@@ -13,7 +13,9 @@ trait CreatedTrait
      */
     public function getCreated()
     {
-        if (!is_null($this->created) && !$this->created instanceof \DateTime) {
+        if (null === $this->created) {
+            $this->created = new \DateTime();
+        } elseif(!$this->created instanceof \DateTime) {
             $this->created = new \DateTime($this->created);
         }
         return $this->created;

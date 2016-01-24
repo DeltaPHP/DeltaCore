@@ -6,11 +6,11 @@
 namespace DeltaCore\Prototype;
 
 use DeltaCore\Prototype\Parts\Activated;
-use DeltaCore\Prototype\Parts\TimeStamp;
+use DeltaCore\Prototype\Parts\TimeStampTrait;
 
 class MiddleObject extends AbstractEntity implements TimeStampInterface, ActivatedInterface
 {
-    use TimeStamp;
+    use TimeStampTrait;
     use Activated;
 
     protected $name;
@@ -19,7 +19,6 @@ class MiddleObject extends AbstractEntity implements TimeStampInterface, Activat
     function __construct()
     {
         $this->setCreated(new \DateTime());
-        $this->setChanged(new \DateTime());
     }
 
     /**

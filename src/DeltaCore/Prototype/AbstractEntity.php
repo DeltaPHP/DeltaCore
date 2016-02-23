@@ -10,6 +10,7 @@ use DeltaCore\Parts\MagicSetGetManagers;
 use DeltaDb\EntityInterface;
 use DeltaUtils\Object\Prototype\StringableInterface;
 use DeltaUtils\StringUtils;
+use DeltaUtils\Object\Prototype\ArrayableInterface;
 
 abstract class AbstractEntity implements EntityInterface, ArrayableInterface, StringableInterface, ElasticEntityInterface
 {
@@ -85,14 +86,13 @@ abstract class AbstractEntity implements EntityInterface, ArrayableInterface, St
             if(is_callable([$this, $method]) ) {
                 $value = $this->{$method}();
                 if (is_object($value)) {
-                    if (method_exists($value, "toArray")) {
+                    if ($value instanceof ArrayableInterface || method_exists($value, "toArray")) {
                         $value = $value->toArray();
-                    } elseif (method_exists($value, "__toString")) {
+                    } elseif ($value instanceof StringableInterface || method_exists($value, "__toString")) {
                         $value = (string)$value;
                     } else {
                         continue;
                     }
-
                 } elseif (is_resource($value)) {
                     continue;
                 }

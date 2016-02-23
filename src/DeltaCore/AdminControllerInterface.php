@@ -10,5 +10,5 @@ interface AdminControllerInterface
 {
     public function listAction();
     public function formAction(array $params = []);
-    public function rmAction(array $params);
+    public function rmAction(array $params = []);
 }

@@ -197,9 +197,7 @@ class Application extends DI implements ConfigInterface
 
     public function setRoute($route, $name = null)
     {
-        if (Route::isShort($route)) {
-            $route = Route::shortNormalize($route);
-        }
+        $route = Route::normalize($route);
         if (is_array($route["action"])) {
             $route["action"] = array_values($route["action"]);
             $route["args"] = isset($route["args"]) ? array_merge($route["action"], [$route["args"]]) : $route["action"];

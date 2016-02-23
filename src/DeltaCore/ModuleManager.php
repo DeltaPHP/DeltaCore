@@ -123,9 +123,7 @@ class ModuleManager
             }
             $moduleRoutes = include $routersFile;
             foreach ($moduleRoutes as $key => &$route) {
-                if (Route::isShort($route)) {
-                    $route = Route::shortNormalize($route);
-                }
+                $route = Route::normalize($route);
                 if (is_array($route["action"])) {
                     $route["action"] = [
                         [

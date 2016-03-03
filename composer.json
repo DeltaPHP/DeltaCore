@@ -20,6 +20,7 @@
         "deltaphp/httpwarp": "^1.0",
         "deltaphp/deltautils": "^1.0",
         "deltaphp/dtpl": "^1.0",
-        "pimple/pimple": "^3.0"
+        "pimple/pimple": "^3.0",
+        "webmozart/console": "~1.0@beta"
     }
 }

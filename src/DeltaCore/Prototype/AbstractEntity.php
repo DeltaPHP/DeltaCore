@@ -18,7 +18,7 @@ abstract class AbstractEntity implements EntityInterface, ArrayableInterface, St
 
     protected $id;
     protected $fieldsList;
-    protected $systemFields = ["fieldsList", "elasticOptions", "systemFields"];
+    protected $systemFields = ["fieldsList", "elasticOptions", "systemFields", "notExportFields"];
     protected $notExportFields = [];
     protected $untrusted = false;
 
@@ -56,15 +56,32 @@ abstract class AbstractEntity implements EntityInterface, ArrayableInterface, St
     /**
      * @return array
      */
+    protected function getSystemFields()
+    {
+        return $this->systemFields;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getNotExportFields()
+    {
+        return $this->notExportFields;
+    }
+
+    /**
+     * @return array
+     */
     public function getFieldsList()
     {
         if (is_null($this->fieldsList)) {
             $methods = get_class_methods($this);
             $fields = [];
+            $systemFields = $this->getSystemFields();
             foreach ($methods as $method) {
                 if ($pos = strpos($method, "get") !== false && strpos($method, "Manager")===false) {
                     $field = lcfirst(substr($method, $pos+2));
-                    if (!in_array($field, $this->systemFields)) {
+                    if (!in_array($field, $systemFields)) {
                         $fields[] = $field;
                     }
                 }
@@ -78,8 +95,9 @@ abstract class AbstractEntity implements EntityInterface, ArrayableInterface, St
     {
         $fields = $this->getFieldsList();
         $values = [];
+        $notExportFields = $this->getNotExportFields();
         foreach ($fields as $field) {
-            if (in_array($field, $this->notExportFields)) {
+            if (in_array($field, $notExportFields)) {
                 continue;
             }
             $method = "get" . ucfirst($field);

@@ -53,6 +53,9 @@ class Application extends DI implements ConfigInterface
      */
     protected $session;
 
+    /** @var  bool */
+    protected $initialized = false;
+
     function __construct()
     {
         parent::__construct();
@@ -89,6 +92,22 @@ class Application extends DI implements ConfigInterface
 
             return $mm;
         };
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isInitialized()
+    {
+        return $this->initialized;
+    }
+
+    /**
+     * @param boolean $initialized
+     */
+    public function setInitialized($initialized = true)
+    {
+        $this->initialized = $initialized;
     }
 
     /**
@@ -247,8 +266,13 @@ class Application extends DI implements ConfigInterface
         }
     }
 
-    public function init()
+    public function init($reinitialize = false)
     {
+        if ($this->isInitialized() && !$reinitialize) {
+            return;
+        }
+        $this->setInitialized(true);
+
         $mm = $this->getModuleManager();
 
         $globalRouters = $this->readRouters();
@@ -462,7 +486,7 @@ class Application extends DI implements ConfigInterface
         if (!isset($this['userManager'])) {
             return null;
         }
-        /** @var \User\Model\UserManager $userManager */
+        /** @var \User\Model\UserManager $use*rManager */
         $userManager = $this['userManager'];
 
         return $userManager->getCurrentUser();

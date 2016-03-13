@@ -93,6 +93,20 @@ class Config implements  \ArrayAccess, \IteratorAggregate
         return $this->childConfig[$pathKey];
     }
 
+    public function getAndCall($path, $callback, array $arguments = null)
+    {
+        if (ArrayUtils::issetByPath($this->configRaw, $path)) {
+            $value = $this->get($path);
+            if (null !== $arguments) {
+                array_unshift($arguments, $value);
+            }
+            else {
+                $arguments = [$value];
+            }
+            return call_user_func_array($callback, $arguments);
+        }
+    }
+
     public function getOrThrow($path)
     {
         $data = $this->get($path);

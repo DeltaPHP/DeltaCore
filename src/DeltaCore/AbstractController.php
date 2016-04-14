@@ -6,7 +6,7 @@ use HttpWarp\Request;
 use HttpWarp\Response;
 use dTpl\ViewInterface;
 
-abstract class AbstractController
+abstract class AbstractController implements ControllerInterface
 {
     /**
      * @var Application

@@ -7,6 +7,7 @@ use DeltaCore\Prototype\ConfigInterface;
 use DeltaCore\View\TwigView;
 use DeltaRouter\Route;
 use DeltaRouter\Router;
+use DeltaUtils\ArrayUtils;
 use DeltaUtils\FileSystem;
 use dTpl\ViewInterface;
 use HttpWarp\Exception\HttpUsableException;
@@ -201,6 +202,7 @@ class Application extends DI implements ConfigInterface
         $appRouters = FileSystem::getPhpConfig($appRoutersPath);
         $projectRouters = FileSystem::getPhpConfig($projectRoutersPath);
         $routers = array_merge($appRouters, $projectRouters);
+        $routers = ArrayUtils::filterNulls($routers);
         return $routers;
     }
 
@@ -211,6 +213,7 @@ class Application extends DI implements ConfigInterface
         $appResources = FileSystem::getPhpConfig($appResourcesPath);
         $projectResources = FileSystem::getPhpConfig($projectResourcesPath);
         $resources = array_merge($appResources, $projectResources);
+        $resources = ArrayUtils::filterNulls($resources);
         return $resources;
     }
 
@@ -402,8 +405,8 @@ class Application extends DI implements ConfigInterface
             $controller = "\\App" . $controller;
         }
         $controller = new $controller();
-        if (!$controller instanceof AbstractController) {
-            throw new \ErrorException();
+        if (!$controller instanceof ControllerInterface) {
+            throw new \ErrorException("Controller mast be implement ControllerInterface");
         }
         $controller->setApplication($this);
         $controller->setRequest($this->getRequest());

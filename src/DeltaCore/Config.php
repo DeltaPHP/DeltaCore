@@ -6,6 +6,7 @@
 namespace DeltaCore;
 
 use DeltaUtils\ArrayUtils;
+use DeltaUtils\Object\Collection;
 
 class Config implements  \ArrayAccess, \IteratorAggregate
 {
@@ -201,6 +202,11 @@ class Config implements  \ArrayAccess, \IteratorAggregate
     public function toArray()
     {
         return (array)$this->configRaw;
+    }
+
+    public function toCollection()
+    {
+        return new Collection($this->configRaw);
     }
 
     public function getIterator()

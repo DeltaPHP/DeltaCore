@@ -89,7 +89,7 @@ class ConfigLoader
             $projectGlobalConfig = $this->readConfig(self::LEVEL_PROJECT, self::GLOBAL_CONFIG);
             $projectLocalConfig = $this->readConfig(self::LEVEL_PROJECT, self::LOCAL_CONFIG);
 
-            $config = ArrayUtils::mergeRecursive($defaultConfig, $appGlobalConfig, $appLocalConfig, $projectGlobalConfig, $projectLocalConfig);
+            $config = ArrayUtils::mergeRecursiveDisabled($defaultConfig, $appGlobalConfig, $appLocalConfig, $projectGlobalConfig, $projectLocalConfig);
             $this->configObj = new Config($config, $environment);
         }
         return $this->configObj;

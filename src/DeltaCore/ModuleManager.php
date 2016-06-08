@@ -67,13 +67,13 @@ class ModuleManager
         return $this->loader;
     }
 
-    public function load()
+    public function load(Application $application = null)
     {
         $modules = $this->getModulesList();
         foreach ($modules as $moduleName) {
             $class = "\\{$moduleName}\\Module";
             if (is_callable([$class, "init"])) {
-                call_user_func([$class, "init"]);
+                call_user_func([$class, "init"], $this, $application);
             }
         }
     }
@@ -102,9 +102,22 @@ class ModuleManager
         }
         $this->setInnerCache($cacheKey, $path);
         if (!$path) {
-            return false;
+            return null;
         }
 
+        return $path;
+    }
+
+    public function getModuleConfigPath($moduleName)
+    {
+        $path = $this->getModulePath($moduleName);
+        if (!$path) {
+            return null;
+        }
+        $path = $path . "/config";
+        if (!file_exists($path)) {
+            return null;
+        }
         return $path;
     }
 

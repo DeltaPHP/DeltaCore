@@ -51,16 +51,28 @@ class Config implements  \ArrayAccess, \IteratorAggregate
         $this->configRaw = ArrayUtils::set($this->configRaw, $path, $data);
     }
 
-    public function joinLeft(array $data)
+    public function joinLeft($data)
     {
+        if ($data instanceof Config) {
+            $data = $data->toArray();
+        } else {
+            $data = (array) $data;
+        }
         $this->configRaw = ArrayUtils::mergeRecursive($data, $this->configRaw);
         $this->childConfig = [];
+        return $this;
     }
 
-    public function joinRight(array $data)
+    public function joinRight($data)
     {
+        if ($data instanceof Config) {
+            $data = $data->toArray();
+        } else {
+            $data = (array) $data;
+        }
         $this->configRaw = ArrayUtils::mergeRecursive($this->configRaw, $data);
         $this->childConfig = [];
+        return $this;
     }
 
     /**

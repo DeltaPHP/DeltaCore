@@ -5,30 +5,31 @@ namespace DeltaCore;
 use HttpWarp\Request;
 use HttpWarp\Response;
 use dTpl\ViewInterface;
+use Pimple\Container;
 
 abstract class AbstractController implements ControllerInterface
 {
     /**
      * @var Application
      */
-    protected $application;
+    private $application;
 
     /**
      * @var Request
      */
-    protected $request;
+    private $request;
 
     /**
      * @var Response
      */
-    protected $response;
+    private $response;
 
     /**
      * @var ViewInterface
      */
-    protected $view;
+    private $view;
 
-    protected $autoRender = true;
+    private $autoRender = true;
 
 
     /**
@@ -39,9 +40,21 @@ abstract class AbstractController implements ControllerInterface
         $this->application = $application;
     }
 
+    /**
+     * @return Application
+     * @deprecated
+     */
     public function getApplication()
     {
         return $this->application;
+    }
+
+    /**
+     * @return Container
+     */
+    public function getDIContainer()
+    {
+        return $this->getApplication();
     }
 
     /**
@@ -83,7 +96,7 @@ abstract class AbstractController implements ControllerInterface
      */
     public function getConfig($path = null, $default = null)
     {
-        return $this->getApplication()->getConfig($path, $default);
+        return $this->getDIContainer()->getConfig($path, $default);
     }
 
     /**
@@ -190,7 +203,7 @@ abstract class AbstractController implements ControllerInterface
 
     public function checkAccess()
     {
-        return $this->getApplication()->isAllow();
+        return $this->getDIContainer()->isAllow();
     }
 
     public function init() {return;}
@@ -199,7 +212,7 @@ abstract class AbstractController implements ControllerInterface
 
     public function getRouteUrl($routeId, array $params = [])
     {
-        return $this->getApplication()->getRouter()->getUrl($routeId, $params);
+        return $this->getDIContainer()->getRouter()->getUrl($routeId, $params);
     }
 
 }

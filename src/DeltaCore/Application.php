@@ -291,7 +291,6 @@ class Application extends DI implements ConfigInterface
         $resources = array_merge($resources, $globalResources);
         $this->setResources($resources);
         //resourses
-        $mm->load();
 
         /** @var \Closure[] $initClosures */
         $initClosures = $this->getConfig("init", [])->toArray();
@@ -300,6 +299,8 @@ class Application extends DI implements ConfigInterface
                 call_user_func($initClosure, $this);
             }
         }
+
+        $mm->load($this);
     }
 
     public function run()

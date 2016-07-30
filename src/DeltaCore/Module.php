@@ -3,7 +3,7 @@
  * User: Vasiliy Shvakin (orbisnull) zen4dev@gmail.com
  */
 
-namespace Attach;
+namespace DeltaCore;
 
 
 class Module

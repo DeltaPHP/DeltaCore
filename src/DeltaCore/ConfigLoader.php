@@ -12,6 +12,7 @@ class ConfigLoader
 {
     const LOCAL_CONFIG = 'local';
     const GLOBAL_CONFIG = 'global';
+    const AUTO_CONFIG = 'auto';
     const LEVEL_APP = "App";
     const LEVEL_PROJECT = "Project";
     const LEVELS = [self::LEVEL_APP, self::LEVEL_PROJECT];
@@ -84,12 +85,14 @@ class ConfigLoader
     {
         if (is_null($this->configObj)) {
             $defaultConfig = $this->getDefaultConfig();
+            $appAutoConfig = $this->readConfig(self::LEVEL_APP, self::AUTO_CONFIG);
             $appGlobalConfig = $this->readConfig(self::LEVEL_APP, self::GLOBAL_CONFIG);
             $appLocalConfig = $this->readConfig(self::LEVEL_APP, self::LOCAL_CONFIG);
+            $projectAutoConfig = $this->readConfig(self::LEVEL_PROJECT, self::AUTO_CONFIG);
             $projectGlobalConfig = $this->readConfig(self::LEVEL_PROJECT, self::GLOBAL_CONFIG);
             $projectLocalConfig = $this->readConfig(self::LEVEL_PROJECT, self::LOCAL_CONFIG);
 
-            $config = ArrayUtils::mergeRecursiveDisabled($defaultConfig, $appGlobalConfig, $appLocalConfig, $projectGlobalConfig, $projectLocalConfig);
+            $config = ArrayUtils::mergeRecursiveDisabled($defaultConfig, $appAutoConfig, $appGlobalConfig, $appLocalConfig, $projectAutoConfig, $projectGlobalConfig, $projectLocalConfig);
             $this->configObj = new Config($config, $environment);
         }
         return $this->configObj;

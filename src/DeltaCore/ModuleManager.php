@@ -85,7 +85,7 @@ class ModuleManager
         if ($path) {
             return $path;
         }
-        $class = "\\{$moduleName}\\Module";
+        $class = "{$moduleName}\\Module";
         $loader = $this->getLoader();
         $file = $loader->findFile($class);
         $path = null;

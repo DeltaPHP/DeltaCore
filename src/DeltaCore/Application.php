@@ -390,20 +390,20 @@ class Application extends DI implements ConfigInterface
         if (!is_array($controller)) {
             $controllerName = lcfirst($controller);
             $template = $controllerName . '/' . $actionName;
-            $controller = '\\Controller\\' . ucfirst($controllerName) . 'Controller';
+            $controller = 'Controller\\' . ucfirst($controllerName) . 'Controller';
             $httpCachePath = [$controllerName, $actionName];
         } else {
             $module = ucfirst($controller["module"]);
             $controllerId = lcfirst($controller["controller"]);
             $controllerName = "{$module}/{$controllerId}";
-            $controller = "\\{$module}\\Controller\\" . ucfirst($controllerId) . 'Controller';
+            $controller = "{$module}\\Controller\\" . ucfirst($controllerId) . 'Controller';
             $template = "{$controllerName}/{$actionName}";
             $httpCachePath = [$module, $controllerId, $actionName];
         }
 
         /** @var AbstractController $controller */
         if (!$this->getLoader()->findFile($controller)) {
-            $controller = "\\App" . $controller;
+            $controller = "App" . $controller;
         }
         $controller = new $controller();
         if (!$controller instanceof ControllerInterface) {

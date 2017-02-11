@@ -403,7 +403,7 @@ class Application extends DI implements ConfigInterface
 
         /** @var AbstractController $controller */
         if (!$this->getLoader()->findFile($controller)) {
-            $controller = "App" . $controller;
+            $controller = "App\\" . $controller;
         }
         $controller = new $controller();
         if (!$controller instanceof ControllerInterface) {
